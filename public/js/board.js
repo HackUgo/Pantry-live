@@ -95,7 +95,7 @@ function cardHtml(i) {
 
   const count = out
     ? `<div class="count out">Out</div>`
-    : `<div class="count">${qty}${i.unit ? ` ${esc(unitFor(qty, i.unit))}` : ""}</div>`;
+    : `<div class="count in">${qty}${i.unit ? ` ${esc(unitFor(qty, i.unit))}` : ""}</div>`;
   const when = out ? (i.out_at ? `since ${formatTime(i.out_at)}` : "") : arrived(i.arrived_at);
   const best = i.best_by && !out ? `<span class="badge">Best by ${esc(formatDay(i.best_by))}</span>` : "";
   const follow = out
@@ -149,7 +149,7 @@ function paintBoard() {
   if (filter !== "All" && !cats.includes(filter)) filter = "All";
   $("#chips").innerHTML =
     `<button class="bubble" data-cat="All" aria-pressed="${filter === "All"}">` +
-      `<span class="bubble-img">${all.length}</span><span class="bubble-label">All</span></button>` +
+      `<span class="bubble-img all"><img src="/icons/logo.svg" alt=""></span><span class="bubble-label">All ${all.length}</span></button>` +
     cats.map((c) => `<button class="bubble" data-cat="${esc(c)}" aria-pressed="${filter === c}">` +
       `<span class="bubble-img"><img src="${esc(CATEGORY_IMAGES[c])}" alt="" loading="lazy"></span>` +
       `<span class="bubble-label">${esc(SHORT[c] || c)}</span></button>`).join("");

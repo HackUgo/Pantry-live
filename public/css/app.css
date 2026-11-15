@@ -75,6 +75,10 @@ a { color: inherit; }
 .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
 .live.on { color: var(--green-ink); }
 .live.on::before { background: var(--green); }
+/* The Live dot breathes while the board is listening. */
+#live.on::before { animation: breathe 2s ease-in-out infinite; }
+@keyframes breathe { 50% { box-shadow: 0 0 0 5px rgb(6 193 103 / 0.18); } }
+@media (prefers-reduced-motion: reduce) { #live::before { animation: none; } .card .photo { transition: none; } }
 .live:empty { display: none; }
 
 /* ---------- Bars ---------- */
@@ -185,13 +189,19 @@ a { color: inherit; }
   background: var(--text); color: var(--on-brand); font-size: 12px; font-weight: 700;
 }
 .card .stock-tag, .shot-wrap .stock-tag {
-  position: absolute; z-index: 2; left: 8px; top: 8px; padding: 3px 7px; border-radius: 4px;
-  background: rgb(255 255 255 / 0.9); color: var(--muted); font-size: 11px; font-weight: 600;
+  position: absolute; z-index: 2; left: 8px; top: 8px; padding: 2px 6px; border-radius: 4px;
+  background: rgb(0 0 0 / 0.5); color: #fff; font-size: 10px; font-weight: 600; letter-spacing: 0.01em;
 }
+/* Photos answer a touch: a small press on phones, a slow zoom on laptops. */
+.card .pic { overflow: hidden; border-radius: var(--radius); }
+.card .photo { transition: transform 0.35s ease; }
+.card:active .photo { transform: scale(0.97); }
+@media (hover: hover) { .card:hover .photo { transform: scale(1.04); } }
 .card .body { position: relative; padding-top: 8px; }
 .card .name { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
 .card .count { font-size: 14px; font-weight: 600; margin-top: 1px; }
 .card .count.out { color: var(--red); }
+.card .count.in { color: var(--green-ink); }
 .card .when { font-size: 13px; color: var(--muted); }
 .card .body .act { position: relative; z-index: 2; margin-top: 8px; }
 
@@ -242,6 +252,7 @@ a { color: inherit; }
   background: var(--surface-2); font-weight: 700; font-size: 17px;
 }
 .bubble-img img { width: 100%; height: 100%; object-fit: cover; }
+.bubble-img.all { background: none; }
 .bubble-label { font-size: 13px; color: var(--text); }
 .bubble[aria-pressed="true"] { border-bottom-color: var(--text); }
 .bubble[aria-pressed="true"] .bubble-label { font-weight: 700; }
@@ -274,6 +285,12 @@ a { color: inherit; }
   padding: calc(24px + env(safe-area-inset-top)) var(--gutter) calc(24px + env(safe-area-inset-bottom));
 }
 .join .brandline { display: flex; align-items: center; gap: 8px; }
+.join-food { display: flex; margin-top: 28px; }
+.join-food img {
+  width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg);
+  background: var(--surface-2); margin-left: -12px;
+}
+.join-food img:first-child { margin-left: 0; }
 .join-line { margin: 28px 0 0; font-size: 22px; line-height: 1.35; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
 
 /* ---------- Sheets ---------- */
