@@ -112,7 +112,8 @@ function cardHtml(i) {
 
 function paintHeader() {
   const open = openLine(cfg.hours);
-  $("#openLine").textContent = `${open} · ${cfg.place}`;
+  const isOpen = openState(cfg.hours).open;
+  $("#openLine").innerHTML = `<span class="status${isOpen ? " on" : ""}">${esc(open)}</span><span>${esc(cfg.place)}</span>`;
   $("#live").classList.toggle("on", socketOn);
   $("#openSide").textContent = open;
   $("#openSide").classList.toggle("on", openState(cfg.hours).open && socketOn);
@@ -156,6 +157,11 @@ function paintBoard() {
   const inCat = filter === "All" ? all : all.filter((i) => i.category === filter);
   const shown = sorted(q ? inCat.filter((i) => i.name.toLowerCase().includes(q)) : inCat);
   $("#board").innerHTML = boardHtml(shown, filter === "All" && !q, cardHtml);
+  const inStock = all.filter((i) => qtyOf(i) > 0).length;
+  const outNow = all.length - inStock;
+  $("#shelfSum").textContent = all.length
+    ? `${inStock} in stock${outNow ? `, ${outNow} out` : ""}. Tap + to put it in your bag.`
+    : "Tap + to put it in your bag.";
   paintToday(all, q);
   $("#boardEmpty").hidden = all.length > 0;
   $("#searchEmpty").hidden = !(all.length && q && !shown.length);

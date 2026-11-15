@@ -81,6 +81,15 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) { #live::before { animation: none; } .card .photo { transition: none; } }
 .live:empty { display: none; }
 
+/* Open or closed, as a pill under the board title. */
+#openLine { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.status {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px;
+  background: var(--surface-2); color: var(--muted); font-size: 14px; font-weight: 600;
+}
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status.on { background: var(--green-soft); color: var(--green-ink); }
+
 /* ---------- Bars ---------- */
 
 .topbar {
