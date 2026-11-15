@@ -1,6 +1,7 @@
 // Staff routes under /api. Each one checks the PIN in the Worker.
 //   POST /api/staff/check   the sign in screen asks if a PIN is right
-//   GET  /api/staff/today   pickups waiting, reservations today, followers per item
+//   GET  /api/staff/today   pickups waiting, reservations today, followers per item,
+//                           students signed up for emails
 //   POST /api/scan          photo in, items with boxes and counts out
 
 import { Hono } from "hono";
@@ -21,12 +22,13 @@ staff.post("/staff/check", rateLimit("pin"), requirePin, (c) => c.json({ ok: tru
 staff.get("/staff/today", requirePin, async (c) => {
   const db = adminDb(c.env);
   const since = dayStart(c.env.TIME_ZONE);
-  const [res, fol] = await Promise.all([
+  const [res, fol, joined] = await Promise.all([
     db.from("reservations").select("status").gte("created_at", since),
     db.from("follows").select("item_id"),
+    db.from("students").select("email", { count: "exact", head: true }),
   ]);
-  if (res.error || fol.error) {
-    console.error("today read failed", res.error?.message ?? fol.error?.message);
+  if (res.error || fol.error || joined.error) {
+    console.error("today read failed", res.error?.message ?? fol.error?.message ?? joined.error?.message);
     return c.json({ error: "Could not read today's pickups." }, 500);
   }
   const rows = res.data ?? [];
@@ -37,6 +39,7 @@ staff.get("/staff/today", requirePin, async (c) => {
     today: rows.filter((r) => r.status !== "released").length,
     cap: DAILY_CAP,
     followers,
+    signed_up: joined.count ?? 0,
   });
 });
 

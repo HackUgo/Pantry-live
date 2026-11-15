@@ -207,6 +207,8 @@ function paintToday() {
     : `<p class="muted" style="margin:14px 0">Nothing scanned in yet today.</p>`;
   $("#removeToday").hidden = !arrived.length;
 
+  if (t) $("#signedUp").textContent = `${students(t.signed_up ?? 0)} signed up for emails`;
+
   const followers = t?.followers ?? {};
   $("#outNotes").textContent = state.items
     .filter((i) => (Number(i.qty) || 0) <= 0 && followers[i.id] > 0)
