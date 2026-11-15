@@ -6,7 +6,7 @@
 import {
   start, db, api, live, onWake, openLine, openState, weekHours, arrived, formatTime, formatDay, isToday, esc, $, registerWorker,
 } from "/js/app.js";
-import { CATEGORIES, CATEGORY_IMAGES, SHORT, photoFor, unitFor } from "/js/catalog.js";
+import { CATEGORIES, CATEGORY_IMAGES, SHORT, catLabel, photoFor, unitFor } from "/js/catalog.js";
 import { store } from "/js/student-store.js";
 import { initBag } from "/js/bag.js";
 import { openTellMe } from "/js/follow.js";
@@ -218,7 +218,7 @@ function openItem(id) {
     ${photo}
     <div class="sheet-head">
       <div><h2>${esc(i.name)}</h2>
-        <div class="muted">${esc(i.arrived_at ? `Arrived ${formatTime(i.arrived_at)}${i.photo_url ? ", this photo" : ""}.` : "")} ${esc(i.category || "")}.</div></div>
+        <div class="muted">${esc(i.arrived_at ? `Arrived ${formatTime(i.arrived_at)}${i.photo_url ? ", this photo" : ""}.` : "")} ${esc(catLabel(i.category))}.</div></div>
       <div class="big">${qtyOf(i)}</div>
     </div>
     ${i.best_by ? `<p class="muted" style="margin:10px 0 0">Best by ${esc(formatDay(i.best_by))}, as printed on the pack.</p>` : ""}

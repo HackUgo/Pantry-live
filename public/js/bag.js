@@ -5,7 +5,7 @@
 
 import { api, esc, $ } from "/js/app.js";
 import { store } from "/js/student-store.js";
-import { photoFor, unitFor } from "/js/catalog.js";
+import { catLabel, photoFor, unitFor } from "/js/catalog.js";
 import qrcode from "/js/vendor/qrcode.mjs";
 
 const qtyOf = (i) => Number(i?.qty) || 0;
@@ -105,7 +105,7 @@ export function initBag(ctx) {
     $("#codeMeta").textContent = `${h.name.split(/\s+/)[0]} · ${h.place || ctx.cfg.place} · before ${h.closes || "closing"} today`;
     $("#codeRows").innerHTML = h.items.map((i) => `
       <div class="row"><div class="left"><img class="thumb" src="${esc(photoFor(ctx.items.get(i.id) || i))}" alt="">` +
-      `<div><div class="name">${esc(i.name)}</div><div class="sub">${esc(i.category || "")}</div></div></div><span class="qty">${i.n}</span></div>`).join("");
+      `<div><div class="name">${esc(i.name)}</div><div class="sub">${esc(catLabel(i.category))}</div></div></div><span class="qty">${i.n}</span></div>`).join("");
     $("#releaseBtn").textContent = releaseArmed ? "Tap again to release them" : "Release my items";
   }
 

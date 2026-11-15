@@ -11,12 +11,19 @@ export const CATEGORIES = [
   "Other",
 ];
 
-// Short chip labels for the phone board.
+// Short chip labels for the board's category row.
 export const SHORT = {
   "Dairy & Eggs": "Dairy",
   "Grains & Pasta": "Grains",
   "Drinks & Snacks": "Drinks",
+  "Canned": "Can",
 };
+
+// What students read for a category. Stored values stay as they are.
+const LABELS = { "Canned": "Can" };
+export function catLabel(category) {
+  return LABELS[category] || category || "";
+}
 
 // "Canned Beans" -> "canned-bean", "Eggs" -> "egg". Same rule as the first
 // version, so its rows keep their ids and a rescanned item lands on its row.
