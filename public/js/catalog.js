@@ -54,22 +54,6 @@ export const ITEM_IMAGES = {
 export function photoFor(item) {
   return item?.photo_url || ITEM_IMAGES[item?.id] || CATEGORY_IMAGES[item?.category] || CATEGORY_IMAGES.Other;
 }
-
-// Each category's colour, a token in app.css (--cat-produce and so on).
-export const CATEGORY_KEYS = {
-  "Produce": "produce",
-  "Dairy & Eggs": "dairy",
-  "Grains & Pasta": "grains",
-  "Canned": "canned",
-  "Protein": "protein",
-  "Drinks & Snacks": "drinks",
-  "Other": "other",
-};
-
-export function catColor(category) {
-  return `var(--cat-${CATEGORY_KEYS[category] || "other"})`;
-}
-
 // "1 jug", "2 jugs", "1 box", "1 bunch": units are stored plural.
 export function unitFor(qty, unit) {
   if (!unit || Number(qty) !== 1) return unit || "";

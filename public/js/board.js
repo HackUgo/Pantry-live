@@ -6,7 +6,7 @@
 import {
   start, db, api, live, onWake, openLine, openState, weekHours, arrived, formatTime, formatDay, isToday, esc, $, registerWorker,
 } from "/js/app.js";
-import { CATEGORIES, CATEGORY_IMAGES, SHORT, catColor, photoFor, unitFor } from "/js/catalog.js";
+import { CATEGORIES, CATEGORY_IMAGES, SHORT, photoFor, unitFor } from "/js/catalog.js";
 import { store } from "/js/student-store.js";
 import { initBag } from "/js/bag.js";
 import { openTellMe } from "/js/follow.js";
@@ -77,31 +77,35 @@ function cardHtml(i) {
   const id = esc(i.id);
   const name = esc(i.name);
   const max = Math.min(Number(i.max_per_pickup) || 2, qty);
-  const photo = `<img class="photo" src="${esc(photoFor(i))}" alt="${name}" loading="lazy">` +
-    (i.photo_url || inBag ? "" : `<span class="stock-tag">Stock photo</span>`);
-  const count = out
-    ? `<div class="count">Out</div>`
-    : `<div class="count">${qty}${i.unit ? `<small>${esc(unitFor(qty, i.unit))}</small>` : ""}</div>`;
-  const when = out ? (i.out_at ? `since ${formatTime(i.out_at)}` : "") : arrived(i.arrived_at);
-  let act = "";
-  if (out) {
-    act = store.following[i.id]
-      ? `<span class="tag-green act">Following</span>`
-      : `<button class="tag-line act" data-tell="${id}">Tell me</button>`;
-  } else if (inBag) {
-    // Add from the card: change the count without opening the sheet.
-    act = `<div class="stepper mini act">` +
+
+  // On the photo: the in bag badge, the stock photo note, and + or the stepper.
+  let onPhoto = "";
+  if (!out && inBag) {
+    onPhoto = `<div class="stepper mini act">` +
       `<button type="button" data-bag="${id}" data-step="-1" aria-label="One less ${name}">−</button>` +
       `<output>${Math.min(inBag, max)}</output>` +
       `<button type="button" data-bag="${id}" data-step="1" aria-label="One more ${name}"${inBag >= max ? " disabled" : ""}>+</button></div>`;
-  } else {
-    act = `<button class="round act" data-add="${id}" aria-label="Add ${name} to your bag">+</button>`;
+  } else if (!out) {
+    onPhoto = `<button class="round act" data-add="${id}" aria-label="Add ${name} to your bag">+</button>`;
   }
-  const bagTag = inBag && !out ? `<span class="tag-green bagtag">${inBag} in bag</span>` : "";
-  return `<article class="card${out ? " out" : ""}" style="--cat:${catColor(i.category)}">
+  const badge = inBag && !out ? `<span class="bagtag">${inBag} in bag</span>` : "";
+  const stock = i.photo_url || inBag ? "" : `<span class="stock-tag">Stock photo</span>`;
+
+  const count = out
+    ? `<div class="count out">Out</div>`
+    : `<div class="count">${qty}${i.unit ? ` ${esc(unitFor(qty, i.unit))}` : ""}</div>`;
+  const when = out ? (i.out_at ? `since ${formatTime(i.out_at)}` : "") : arrived(i.arrived_at);
+  const best = i.best_by && !out ? `<span class="badge">Best by ${esc(formatDay(i.best_by))}</span>` : "";
+  const follow = out
+    ? (store.following[i.id]
+      ? `<span class="tag-green act">Following</span>`
+      : `<button class="tag-line act" data-tell="${id}">Tell me</button>`)
+    : "";
+
+  return `<article class="card${out ? " out" : ""}">
     <button class="card-open" data-open="${id}" aria-label="${name}, ${out ? "Out" : `${qty} on the shelf`}"></button>
-    ${photo}${bagTag}
-    <div class="body"><div class="cat">${esc(i.category || "Other")}</div><div class="name">${name}</div>${count}<div class="when">${esc(when)}</div>${i.best_by && !out ? `<div class="when best">best by ${esc(formatDay(i.best_by))}</div>` : ""}${act}</div>
+    <div class="pic"><img class="photo" src="${esc(photoFor(i))}" alt="${name}" loading="lazy">${badge}${stock}${onPhoto}</div>
+    <div class="body"><div class="name">${name}</div>${count}<div class="when">${esc(when)}</div>${best}${follow}</div>
   </article>`;
 }
 
@@ -143,8 +147,8 @@ function paintBoard() {
   if (filter !== "All" && !cats.includes(filter)) filter = "All";
   $("#chips").innerHTML =
     `<button class="bubble" data-cat="All" aria-pressed="${filter === "All"}">` +
-      `<span class="bubble-img">${all.length}</span><span class="bubble-label">All items</span></button>` +
-    cats.map((c) => `<button class="bubble" data-cat="${esc(c)}" aria-pressed="${filter === c}" style="--cat:${catColor(c)}">` +
+      `<span class="bubble-img">${all.length}</span><span class="bubble-label">All</span></button>` +
+    cats.map((c) => `<button class="bubble" data-cat="${esc(c)}" aria-pressed="${filter === c}">` +
       `<span class="bubble-img"><img src="${esc(CATEGORY_IMAGES[c])}" alt="" loading="lazy"></span>` +
       `<span class="bubble-label">${esc(SHORT[c] || c)}</span></button>`).join("");
   const q = query.trim().toLowerCase();
@@ -177,10 +181,10 @@ function paintToday(all, q) {
     .sort((a, b) => Date.parse(b.arrived_at) - Date.parse(a.arrived_at));
   $("#todayRow").hidden = !fresh.length || Boolean(q);
   $("#todayTiles").innerHTML = fresh.map((i) => `
-    <button class="tile" data-open="${esc(i.id)}" style="--cat:${catColor(i.category)}">
+    <button class="tile" data-open="${esc(i.id)}">
       <img src="${esc(photoFor(i))}" alt="" loading="lazy">
       <span class="tile-name">${esc(i.name)}</span>
-      <span class="tile-when">${esc(formatTime(i.arrived_at))}</span>
+      <span class="tile-when">${esc(`${qtyOf(i)}${i.unit ? ` ${unitFor(qtyOf(i), i.unit)}` : ""} · ${formatTime(i.arrived_at)}`)}</span>
     </button>`).join("");
 }
 

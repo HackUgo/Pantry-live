@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f3f6f4">
+  <meta name="theme-color" content="#ffffff">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Pantry Live">
@@ -37,9 +37,10 @@
     <input class="field search" id="search" type="search" placeholder="Search the shelf" autocomplete="off" aria-label="Search the shelf">
     <nav class="bubbles board-chips" id="chips" aria-label="Categories"></nav>
     <section class="today-row" id="todayRow" hidden aria-label="Arrived today">
-      <h2 class="today-title">New on the shelf today</h2>
+      <div class="section-title"><h2>New on the shelf today</h2><p>Scanned in by staff this shift</p></div>
       <div class="tiles" id="todayTiles"></div>
     </section>
+    <div class="section-title"><h2>On the shelf</h2><p>Live counts, photographed as they arrived</p></div>
     <section class="grid" id="board" aria-live="polite"></section>
     <p class="muted" id="searchEmpty" hidden style="margin-top:20px"></p>
     <p class="muted" id="boardEmpty" hidden style="margin-top:24px">Nothing on the board yet. Staff photograph items as they arrive.</p>
