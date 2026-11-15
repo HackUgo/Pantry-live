@@ -39,3 +39,5 @@ SUPABASE_URL=https://tcjqrtvupiesddusclkc.supabase.co SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 The key comes from the Supabase dashboard (Project settings, API keys, `service_role`). Do not save it in a file.
+
+15. **One scan photo became every item's card picture.** A shot of bananas, rice and sauce put the same group photo on all three cards. Rule: the scan is read for data only; a card shows its item's stock image or its category (`photoFor` in public/js/catalog.js, covered by src/lib/photo.test.ts).

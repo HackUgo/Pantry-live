@@ -91,7 +91,6 @@ function cardHtml(i) {
     onPhoto = `<button class="round act" data-add="${id}" aria-label="Add ${name} to your bag">+</button>`;
   }
   const badge = inBag && !out ? `<span class="bagtag">${inBag} in bag</span>` : "";
-  const stock = i.photo_url || inBag ? "" : `<span class="stock-tag">Stock photo</span>`;
 
   const count = out
     ? `<div class="count out">Out</div>`
@@ -106,7 +105,7 @@ function cardHtml(i) {
 
   return `<article class="card${out ? " out" : ""}">
     <button class="card-open" data-open="${id}" aria-label="${name}, ${out ? "Out" : `${qty} on the shelf`}"></button>
-    <div class="pic"><img class="photo" src="${esc(photoFor(i))}" alt="${name}" loading="lazy">${badge}${stock}${onPhoto}</div>
+    <div class="pic"><img class="photo" src="${esc(photoFor(i))}" alt="${name}" loading="lazy">${badge}${onPhoto}</div>
     <div class="body"><div class="name">${name}</div>${count}<div class="when">${esc(when)}</div>${best}${follow}</div>
   </article>`;
 }
@@ -215,7 +214,7 @@ function openItem(id) {
     ? `Reserving opens again ${win.opens || "next pantry day"}. You can walk in when the pantry is open.`
     : `Reserve now, pick up at the desk before ${win?.closes || openState(cfg.hours).closes || "closing"} with your code.`;
   const photo = `<div class="shot-wrap"><img class="shot-lg" src="${esc(photoFor(i))}" alt="${esc(i.name)}">` +
-    `${i.photo_url ? "" : `<span class="stock-tag">Stock photo until staff scan it in</span>`}</div>`;
+    `</div>`;
   openSheet(`
     ${photo}
     <div class="sheet-head">

@@ -36,7 +36,7 @@ function groupHtml(category, items) {
   const label = GROUPED[category];
   const total = items.reduce((sum, i) => sum + Math.max(0, qtyOf(i)), 0);
   const kinds = items.length;
-  const photo = items.find((i) => i.photo_url)?.photo_url || CATEGORY_IMAGES[category];
+  const photo = CATEGORY_IMAGES[category];
   const rows = items.map((i) => {
     const qty = qtyOf(i);
     const out = qty <= 0;

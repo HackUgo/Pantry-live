@@ -37,8 +37,10 @@ export function slug(name) {
   return s || "item";
 }
 
-// Stock photos (Unsplash, free licence) shown for an item until a volunteer
-// scans it in. The scanned photo always wins.
+// Card pictures. The scan photo is only read for names, counts and best by
+// dates; it never becomes a card's picture, because one shot often holds
+// several items. A card shows its own item, or its category when the item has
+// no picture of its own (Unsplash, free licence).
 export const CATEGORY_IMAGES = {
   "Produce": "/images/categories/produce.webp",
   "Dairy & Eggs": "/images/categories/dairy-eggs.webp",
@@ -49,8 +51,8 @@ export const CATEGORY_IMAGES = {
   "Other": "/images/categories/other.webp",
 };
 
-// Stock photos of the exact item (Unsplash, free licence), for the starting
-// shelf. Checked by eye: each one shows that item, nothing close to it.
+// Pictures of the exact item (Unsplash, free licence). Checked by eye: each one
+// shows that item, nothing close to it.
 export const ITEM_IMAGES = {
   "egg": "/images/items/egg.webp",
   "milk": "/images/items/milk.webp",
@@ -61,9 +63,11 @@ export const ITEM_IMAGES = {
   "peanut-butter": "/images/items/peanut-butter.webp",
 };
 
-// The volunteer's photo first, then a stock photo of that item, then its category.
+// The item's own picture (plural ids find the singular), then its category.
 export function photoFor(item) {
-  return item?.photo_url || ITEM_IMAGES[item?.id] || CATEGORY_IMAGES[item?.category] || CATEGORY_IMAGES.Other;
+  const id = String(item?.id || "");
+  return ITEM_IMAGES[id] || ITEM_IMAGES[id.replace(/e?s$/, "")] || ITEM_IMAGES[id.replace(/s$/, "")]
+    || CATEGORY_IMAGES[item?.category] || CATEGORY_IMAGES.Other;
 }
 // "1 jug", "2 jugs", "1 box", "1 bunch": units are stored plural.
 export function unitFor(qty, unit) {
