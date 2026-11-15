@@ -9,6 +9,7 @@ import {
 import { photoFor, unitFor } from "/js/catalog.js";
 import { initScan } from "/js/staff-scan.js";
 import { initDesk } from "/js/staff-desk.js";
+import { initTools } from "/js/staff-tools.js";
 
 const NAMES = ["Ugonna", "Maya", "Leon", "Hannah", "Praise"];
 
@@ -34,7 +35,7 @@ const state = {
 
 // ---- Views ----
 
-const VIEWS = ["vPin", "vWho", "vToday", "vReading", "vReview", "vPublished", "vPickups", "vHand"];
+const VIEWS = ["vPin", "vWho", "vToday", "vReading", "vReview", "vPublished", "vPickups", "vHand", "vMessage"];
 let current = "";
 let backAction = null;
 
@@ -200,9 +201,11 @@ function paintToday() {
           <div class="left">${photoHtml(i)}
             <div><div class="name">${esc(i.name)}</div>
             <div class="sub">${esc(formatTime(i.arrived_at))}${i.by_name ? ` · ${esc(i.by_name)}` : ""}</div></div>
-          </div>${qtyHtml(i)}
+          </div>
+          <div class="row-end">${qtyHtml(i)}<button class="tag-line" data-remove="${esc(i.id)}">Remove</button></div>
         </div>`).join("")
     : `<p class="muted" style="margin:14px 0">Nothing scanned in yet today.</p>`;
+  $("#removeToday").hidden = !arrived.length;
 
   const followers = t?.followers ?? {};
   $("#outNotes").textContent = state.items
@@ -243,6 +246,7 @@ const ctx = {
 };
 const scan = initScan(ctx);
 const desk = initDesk(ctx);
+initTools(ctx);
 $("#pickupsOpen").addEventListener("click", () => desk.open());
 
 // A desk phone scanned a student's QR: /volunteer#pickup=7K4M.

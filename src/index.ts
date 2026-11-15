@@ -10,6 +10,8 @@ import student from "./routes/student";
 import desk from "./routes/desk";
 import { ReservationError } from "./lib/reservations";
 import { FollowError } from "./lib/follows";
+import { DeskError } from "./lib/desk-tools";
+import { JoinError } from "./lib/students";
 import { releaseNoShows } from "./lib/closing";
 import { adminDb } from "./lib/db";
 import type { Env } from "./env";
@@ -52,7 +54,7 @@ app.route("/", desk);
 
 app.notFound((c) => c.json({ error: "Not found" }, 404));
 app.onError((err, c) => {
-  if (err instanceof ReservationError || err instanceof FollowError) return c.json({ error: err.message }, err.status);
+  if (err instanceof ReservationError || err instanceof FollowError || err instanceof DeskError || err instanceof JoinError) return c.json({ error: err.message }, err.status);
   console.error("api error", err.message);
   return c.json({ error: "Something went wrong on the server. Try again." }, 500);
 });

@@ -4,8 +4,8 @@ The live shelf for the CMU Student Food Pantry. Staff photograph items as they a
 
 Live at https://pantry-live.twokriks.workers.dev
 
-- `/` the student board: search, item cards, item sheet, bag, Reserve for pickup, code screen with a QR the desk scans to open Hand over, Tell me. Items not yet scanned show a stock photo of that item (or its category), marked as one. Cards carry a stepper, categories have their own colour, and what arrived today sits at the top as photo tiles.
-- `/volunteer` staff: PIN, name, Today, Scan items in, Review (tap the photo to add or remove a unit, best by date read off the pack), Put on the board, Pickups, Hand over, Release everyone still waiting
+- `/` the student board: one onboarding step (a school email, skippable), search, item cards, item sheet, bag, Reserve for pickup, code screen with a QR the desk scans to open Hand over, Tell me. Items not yet scanned show a stock photo of that item (or its category), marked as one. Cards carry a stepper, categories have their own colour, and what arrived today sits at the top as photo tiles.
+- `/volunteer` staff: PIN, name, Today, Scan items in, Review (tap the photo to add or remove a unit, best by date read off the pack), Put on the board, Pickups, Hand over, Release everyone still waiting, Remove items, Email students
 - `/system` the projector page: every step lighting up from the event log
 
 ## How it is built
@@ -21,6 +21,8 @@ One Cloudflare Worker (`src/index.ts`, Hono) serves the pages in `public/` and t
 | Telling followers | `src/lib/notify.ts` |
 | Reservations and the desk | `src/lib/reservations.ts` |
 | No shows released at closing (cron every 15 minutes) | `src/lib/closing.ts` |
+| Removing items and emailing students | `src/lib/desk-tools.ts` |
+| Onboarding sign ups | `src/lib/students.ts` |
 | Staff PIN and its lockout | `src/lib/staff.ts` |
 | Event log | `src/lib/events.ts` |
 | Counting, reserving, undo, hand over | Postgres functions in `supabase/` |

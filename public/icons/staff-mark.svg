@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Pantry Live staff">
+  <!-- Pantry Live staff mark: a two shelf pantry with goods stacked on it. -->
+  <rect width="32" height="32" rx="7" fill="#000"/>
+  <g fill="#fff">
+    <!-- the shelves and the uprights -->
+    <rect x="5" y="15" width="22" height="1.6" rx="0.4"/>
+    <rect x="5" y="25.4" width="22" height="1.6" rx="0.4"/>
+    <rect x="5" y="5" width="1.4" height="22" rx="0.4"/>
+    <rect x="25.6" y="5" width="1.4" height="22" rx="0.4"/>
+    <!-- top shelf: a can, a cereal box, a bottle, a small jar -->
+    <rect x="8" y="10" width="3.6" height="5" rx="0.9"/>
+    <rect x="12.4" y="7" width="4.4" height="8" rx="0.5"/>
+    <path d="M18.6 15v-4.6c0-.8.4-1.3.9-1.6V7.4h1.4v1.4c.5.3.9.8.9 1.6V15z"/>
+    <rect x="22" y="11.6" width="2.6" height="3.4" rx="0.8"/>
+    <!-- bottom shelf: a jar, two cans, a bag -->
+    <path d="M8 25.4v-4.2c0-.6.4-1 1-1h.2v-1h2.6v1h.2c.6 0 1 .4 1 1v4.2z"/>
+    <rect x="13.6" y="21" width="3" height="4.4" rx="0.8"/>
+    <rect x="17.2" y="21" width="3" height="4.4" rx="0.8"/>
+    <path d="M21.2 25.4l.5-6.2h2.6l.5 6.2z"/>
+  </g>
+</svg>

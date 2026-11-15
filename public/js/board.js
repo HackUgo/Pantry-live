@@ -10,6 +10,7 @@ import { CATEGORIES, CATEGORY_IMAGES, SHORT, catLabel, photoFor, unitFor } from 
 import { store } from "/js/student-store.js";
 import { initBag } from "/js/bag.js";
 import { openTellMe } from "/js/follow.js";
+import { initJoin } from "/js/join.js";
 
 const cfg = await start();
 registerWorker();
@@ -320,6 +321,7 @@ $("#bagPill").addEventListener("click", () => go("bag"));
 // ---- Start ----
 
 const bag = initBag(ctx);
+initJoin();
 showView();
 live("items", onChange, (on) => { socketOn = on; schedule(); });
 onWake(() => { loadItems(); loadSlots(); bag.refreshHeld(); });

@@ -15,7 +15,7 @@
 <body>
   <header class="topbar">
     <button class="back" id="back" hidden></button>
-    <span class="brand" id="brand">Pantry Live</span>
+    <span class="brand" id="brand"><img class="staff-mark" src="/icons/staff-mark.svg" alt="" width="28" height="28">Pantry Live</span>
     <span class="pill-tag" id="tag">Staff</span>
   </header>
 
@@ -52,8 +52,14 @@
         <div><div class="name">Pickups</div><div class="muted" id="pickupsLine"></div></div>
         <button class="tag-line" id="pickupsOpen" style="height:40px;padding:0 18px;font-size:15px;white-space:nowrap;flex:none">Open ›</button>
       </div>
+      <div class="box-card">
+        <div><div class="name">Email students</div><div class="muted">A note to students who signed up, have a pickup or are waiting on an item</div></div>
+        <button class="tag-line" id="messageOpen" style="height:40px;padding:0 18px;font-size:15px;white-space:nowrap;flex:none">Write ›</button>
+      </div>
       <div class="section-head micro"><span>Arrived today</span><span>On shelf</span></div>
       <div class="rows" id="arrived"></div>
+      <button class="btn btn-danger" id="removeToday" hidden>Remove everything scanned today</button>
+      <p class="hint" id="removeSay" role="status"></p>
       <p class="muted" id="outNotes" style="margin:14px 0 0"></p>
       <div class="foot-actions" style="margin-top:28px">
         <button class="btn btn-primary" id="scanBtn">Scan items in</button>
@@ -112,6 +118,26 @@
         <button class="btn btn-primary" id="handBtn">Handed over</button>
         <button class="btn btn-danger" id="noShowBtn">Did not come, release the items</button>
         <p class="hint" id="handSay" role="status" style="text-align:center"></p>
+      </div>
+    </section>
+
+    <!-- Email students -->
+    <section id="vMessage" hidden>
+      <h1 class="title" style="font-size:30px">Email students</h1>
+      <p class="lede">Sent from the pantry's email. Each student gets their own copy, so nobody sees anyone else's address.</p>
+      <div class="micro" style="margin:22px 0 10px">Who gets it</div>
+      <div class="names" id="msgAudience" style="margin-top:0">
+        <button class="name-pill" data-aud="both" aria-pressed="true">Everyone signed up</button>
+        <button class="name-pill" data-aud="pickups" aria-pressed="false">Pickups today</button>
+        <button class="name-pill" data-aud="waiting" aria-pressed="false">Waiting on an item</button>
+      </div>
+      <p class="hint" id="msgCount"></p>
+      <div class="micro" style="margin:22px 0 10px">Message</div>
+      <textarea class="field area" id="msgText" maxlength="1000" placeholder="For example: Rice and milk just came in. We are open until 7:00 pm in Robinson Hall."></textarea>
+      <p class="hint" id="msgLen">0 of 1,000</p>
+      <div class="foot-actions" style="margin-top:24px">
+        <button class="btn btn-primary" id="msgSend" disabled>Send</button>
+        <p class="hint" id="msgSay" role="status" style="text-align:center"></p>
       </div>
     </section>
 

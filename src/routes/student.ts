@@ -5,6 +5,7 @@
 //   POST /api/release  give the items back (code and email, or code and the staff PIN)
 //   POST /api/pickup   is this hold still standing (code and email)
 //   POST /api/follow   Tell me: one message when an Out item is back
+//   POST /api/join     onboarding: a school email for pantry news
 
 import { Hono } from "hono";
 import type { AppEnv } from "../env";
@@ -15,6 +16,7 @@ import { checkPin } from "../lib/staff";
 import { sendPickupMails } from "../lib/pickup-mail";
 import { overLimit } from "../lib/limits";
 import { addFollow, FollowError } from "../lib/follows";
+import { joinList, JoinError } from "../lib/students";
 import {
   ReservationError, cleanReserve, firstName, pickupStatus, release, reserve, slotsToday,
 } from "../lib/reservations";
@@ -22,7 +24,7 @@ import {
 const student = new Hono<AppEnv>();
 
 student.onError((err, c) => {
-  if (err instanceof ReservationError || err instanceof FollowError) return c.json({ error: err.message }, err.status);
+  if (err instanceof ReservationError || err instanceof FollowError || err instanceof JoinError) return c.json({ error: err.message }, err.status);
   console.error("student route failed", err.message);
   return c.json({ error: "Something went wrong on the server. Try again." }, 500);
 });
@@ -87,6 +89,13 @@ student.post("/follow", rateLimit("follow"), async (c) => {
   const limited = await overLimit(c, "follow", 30, 60);
   if (limited) return limited;
   return c.json(await addFollow(adminDb(c.env), await c.req.json().catch(() => null)));
+});
+
+student.post("/join", rateLimit("join"), async (c) => {
+  const limited = await overLimit(c, "join", 30, 60);
+  if (limited) return limited;
+  const body = await c.req.json().catch(() => null);
+  return c.json(await joinList(adminDb(c.env), body?.email));
 });
 
 export default student;
