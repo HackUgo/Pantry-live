@@ -1,7 +1,7 @@
 // POST /api/scan  — photo in, list of pantry items out.
 // The Gemini key lives in the Vercel env var GEMINI_API_KEY (never in the browser).
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash"; // check AI Studio for the current Flash model name
+const MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash"; // override with the GEMINI_MODEL env var in Vercel
 const LEVELS = ["out", "low", "some", "plenty"];
 const CATEGORIES = [
   "Dairy & Eggs", "Produce", "Canned", "Grains & Pasta", "Bread",
