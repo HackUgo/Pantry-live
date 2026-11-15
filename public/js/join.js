@@ -1,14 +1,13 @@
 // The board's only onboarding: one screen asking for a school email, shown
-// on a phone until it signs up, so the pantry can email news (food in,
-// pickups ready). Any .edu address. The email is required: there is no skip,
-// and a phone that skipped before is asked again. It also fills in Reserve
-// and Tell me later.
+// once on a phone's first visit, so the pantry can email news (food in,
+// pickups ready). Any .edu address. "Not now" lets anyone straight onto the
+// board. The email also fills in Reserve and Tell me later.
 
 import { api, $ } from "/js/app.js";
 import { store } from "/js/student-store.js";
 
 export function initJoin() {
-  if (store.joined === "joined") return;
+  if (store.joined) return;
   $("#joinScreen").hidden = false;
   $("#joinEmail").value = store.me.email || "";
 
@@ -34,4 +33,5 @@ export function initJoin() {
       $("#joinBtn").disabled = false;
     }
   });
+  $("#joinSkip").addEventListener("click", () => close("skipped"));
 }

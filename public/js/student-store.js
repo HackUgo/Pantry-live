@@ -26,7 +26,7 @@ export const store = {
   held: read("pl-held", null),        // { code, email, name, items, created_at, closes, place }
   following: read("pl-following", {}), // { itemId: "email" | "push" }
   me: read("pl-me", { name: "", email: "" }), // typed once, filled in next time
-  joined: read("pl-joined", null),              // "joined" once the email screen is done ("skipped" from before is asked again)
+  joined: read("pl-joined", null),              // "joined" or "skipped" once the email screen is done
 
   setJoined(state) {
     this.joined = state;
