@@ -194,6 +194,30 @@ a { color: inherit; }
 .card .when { font-size: 13px; color: var(--muted); }
 .card .body .act { position: relative; z-index: 2; margin-top: 8px; }
 
+/* A grouped category: one card across the row that drops down to its kinds. */
+.group { grid-column: 1 / -1; border-radius: var(--radius); background: var(--surface-2); }
+.group summary {
+  list-style: none; display: flex; align-items: center; gap: 12px; padding: 10px; cursor: pointer; border-radius: var(--radius);
+}
+.group summary::-webkit-details-marker { display: none; }
+.group-photo { width: 76px; height: 76px; border-radius: 10px; object-fit: cover; flex: none; background: var(--surface); }
+.group-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.group-text .name { font-weight: 700; font-size: 16px; }
+.group-text .count { font-size: 14px; font-weight: 600; }
+.group-text .when { font-size: 13px; color: var(--muted); }
+.group .chev { font-size: 18px; transition: transform 0.2s; padding: 0 6px; }
+.group[open] .chev { transform: rotate(180deg); }
+.kinds { padding: 0 10px 4px; }
+.kind { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid var(--line); }
+.kind-open { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; padding: 0; border: 0; background: none; text-align: left; }
+.kind-open img { width: 46px; height: 46px; border-radius: 8px; object-fit: cover; flex: none; background: var(--surface); }
+.kind-open > span { display: flex; flex-direction: column; min-width: 0; }
+.kind .name { font-weight: 600; font-size: 15px; overflow-wrap: anywhere; }
+.kind .sub { font-size: 13px; color: var(--muted); }
+.kind.out .sub { color: var(--red); }
+.kind.out img { filter: grayscale(1); opacity: 0.5; }
+.kind-act { flex: none; }
+
 /* ---------- Board ---------- */
 
 .page { padding: calc(12px + env(safe-area-inset-top)) var(--gutter) 110px; max-width: 1240px; margin: 0 auto; }

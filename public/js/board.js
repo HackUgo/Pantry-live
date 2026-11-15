@@ -7,6 +7,7 @@ import {
   start, db, api, live, onWake, openLine, openState, weekHours, arrived, formatTime, formatDay, isToday, esc, $, registerWorker,
 } from "/js/app.js";
 import { CATEGORIES, CATEGORY_IMAGES, SHORT, catLabel, photoFor, unitFor } from "/js/catalog.js";
+import { boardHtml, openGroups } from "/js/board-groups.js";
 import { store } from "/js/student-store.js";
 import { initBag } from "/js/bag.js";
 import { openTellMe } from "/js/follow.js";
@@ -155,7 +156,7 @@ function paintBoard() {
   const q = query.trim().toLowerCase();
   const inCat = filter === "All" ? all : all.filter((i) => i.category === filter);
   const shown = sorted(q ? inCat.filter((i) => i.name.toLowerCase().includes(q)) : inCat);
-  $("#board").innerHTML = shown.map(cardHtml).join("");
+  $("#board").innerHTML = boardHtml(shown, filter === "All" && !q, cardHtml);
   paintToday(all, q);
   $("#boardEmpty").hidden = all.length > 0;
   $("#searchEmpty").hidden = !(all.length && q && !shown.length);
@@ -276,6 +277,14 @@ $("#board").addEventListener("click", (e) => {
   if (tell) return openTellMe(ctx, ctx.items.get(tell.dataset.tell));
   if (open) return openItem(open.dataset.open);
 });
+
+// Remember which dropdowns are open, so live updates do not close them.
+$("#board").addEventListener("toggle", (e) => {
+  const group = e.target.closest?.("[data-group]");
+  if (!group) return;
+  if (group.open) openGroups.add(group.dataset.group);
+  else openGroups.delete(group.dataset.group);
+}, true);
 
 $("#search").addEventListener("input", (e) => {
   query = e.target.value;

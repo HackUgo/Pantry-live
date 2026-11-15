@@ -19,6 +19,10 @@ export const SHORT = {
   "Canned": "Can",
 };
 
+// Categories the full board shows as one card that drops down to list each
+// kind (Cans: corn, beans, tomatoes), once there are two kinds or more.
+export const GROUPED = { "Canned": "Cans" };
+
 // What students read for a category. Stored values stay as they are.
 const LABELS = { "Canned": "Can" };
 export function catLabel(category) {
