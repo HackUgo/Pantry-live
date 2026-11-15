@@ -28,6 +28,8 @@ Every bug fixed in this repo, with the rule it taught. New lessons go at the bot
 
 13. **The public log carried pickup codes.** Codes sat next to first names in a table anyone can read. Rule: the public log names a student by first name only. Codes and emails never go in it.
 
+14. **A scan of rice could make a new card instead of adding to Rice.** Names only merged when they matched exactly, so "Long grain white rice" or "Whole grain breakfast cereal" became cards of their own. Rule: one card per kind of food. The reader names the kind, and one shared rule (catalog.js matchItem, used by Review and by publish) puts a scanned name on the board item whose words it contains, in the same category.
+
 ## Demo reset
 
 Before a demo, put the board back to the starting shelf (seven items, Rice and Canned beans Out, empty log, no holds, no follows, empty scans bucket, PIN lock cleared):

@@ -68,3 +68,39 @@ export function unitFor(qty, unit) {
   if (unit.endsWith("s") && !unit.endsWith("ss")) return unit.slice(0, -1);
   return unit;
 }
+
+// Matching a scanned name to an item already on the board, so rice goes on
+// Rice and not on a new card. An exact id wins. Otherwise the board item whose
+// words all appear in the scanned name, in the same category, is the match,
+// the more words the better. Words like canned or fresh say nothing about
+// what the food is, so they are left out on both sides.
+const FILLER = new Set(["canned", "can", "fresh", "organic", "whole", "large", "small", "big", "box", "bag", "pack", "jar", "bottle", "of", "and", "the", "a"]);
+
+function singular(w) {
+  if (w.length > 4 && w.endsWith("ies")) return `${w.slice(0, -3)}y`;
+  if (/(ches|shes|xes|sses|oes)$/.test(w)) return w.slice(0, -2);
+  if (w.length > 3 && w.endsWith("s") && !w.endsWith("ss")) return w.slice(0, -1);
+  return w;
+}
+
+function words(name) {
+  return String(name ?? "").toLowerCase().split(/[^a-z0-9]+/).filter(Boolean).map(singular).filter((w) => !FILLER.has(w));
+}
+
+export function matchItem(name, category, items) {
+  const id = slug(name);
+  const exact = items.find((i) => i.id === id);
+  if (exact) return exact;
+  const scanned = new Set(words(name));
+  let best = null;
+  let bestScore = 0;
+  for (const item of items) {
+    if (category && item.category && category !== item.category) continue;
+    const need = words(item.name);
+    if (need.length && need.every((w) => scanned.has(w)) && need.length > bestScore) {
+      best = item;
+      bestScore = need.length;
+    }
+  }
+  return best;
+}

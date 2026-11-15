@@ -2,7 +2,7 @@
 // and rows for the same item merged.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { cleanPublish, PublishError } from "./scanin";
+import { cleanPublish, onBoard, PublishError } from "./scanin";
 import { slug } from "../../public/js/catalog.js";
 
 const URL_BASE = "https://x.supabase.co";
@@ -38,4 +38,19 @@ test("names become the same ids as the first version", () => {
   assert.equal(slug("Eggs"), "egg");
   assert.equal(slug("Glass"), "glass");
   assert.equal(slug("Peanut butter"), "peanut-butter");
+});
+
+test("rows land on the board item of the same kind and merge", () => {
+  const board = [{ id: "rice", name: "Rice", category: "Grains & Pasta" }, { id: "banana", name: "Banana", category: "Produce" }];
+  const out = onBoard([
+    { id: "long-grain-white-rice", name: "Long grain white rice", category: "Grains & Pasta", unit: "bags", count: 2, best_by: "2027-05-01" },
+    { id: "brown-rice", name: "Brown rice", category: "Grains & Pasta", unit: "bags", count: 1, best_by: "2027-02-01" },
+    { id: "banana", name: "Bananas", category: "Produce", unit: "", count: 6, best_by: null },
+    { id: "spaghetti", name: "Spaghetti", category: "Grains & Pasta", unit: "boxes", count: 3, best_by: null },
+  ], board);
+  assert.deepEqual(out.map((r) => [r.id, r.name, r.count, r.best_by]), [
+    ["rice", "Rice", 3, "2027-02-01"],
+    ["banana", "Banana", 6, null],
+    ["spaghetti", "Spaghetti", 3, null],
+  ]);
 });

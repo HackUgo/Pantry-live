@@ -12,7 +12,7 @@ import { rateLimit } from "../lib/ratelimit";
 import { adminDb } from "../lib/db";
 import { logEvents, type EventRow } from "../lib/events";
 import { tellFollowers, sendCorrections, type Told } from "../lib/notify";
-import { cleanPublish, cleanName, PublishError } from "../lib/scanin";
+import { cleanPublish, cleanName, onBoard, PublishError } from "../lib/scanin";
 
 type ScanItem = {
   id: string; name: string; unit: string; count: number; before: number; after: number; created: boolean;
@@ -33,8 +33,15 @@ publish.post("/publish", rateLimit("publish"), requirePin, async (c) => {
     if (err instanceof PublishError) return c.json({ error: err.message }, 400);
     throw err;
   }
-  const { photo, by, items, request } = input;
+  const { photo, by, request } = input;
   const db = adminDb(c.env);
+  // Rice goes on Rice: every row lands on the board item of the same kind.
+  const { data: board, error: boardError } = await db.from("items").select("id, name, category");
+  if (boardError) {
+    console.error("board read failed", boardError.message);
+    return c.json({ error: "The board did not take it. Try again." }, 500);
+  }
+  const items = onBoard(input.items, board ?? []);
   const { data, error } = await db.rpc("scan_in", { p_items: items, p_photo: photo, p_by: by, p_request: request });
   if (error || !data) {
     console.error("scan_in failed", error?.message);

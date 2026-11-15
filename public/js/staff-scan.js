@@ -5,7 +5,7 @@
 // sign in, Today and the view switch.
 
 import { api, formatTime, esc, $ } from "/js/app.js";
-import { CATEGORIES, slug, unitFor } from "/js/catalog.js";
+import { CATEGORIES, matchItem, unitFor } from "/js/catalog.js";
 
 const MAX_SIDE = 1280;
 const QUALITY = 0.82;
@@ -55,9 +55,9 @@ export function initScan(ctx) {
     return globalThis.crypto?.randomUUID?.() ?? `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
   }
 
-  function existingFor(name) {
-    const id = slug(name || "");
-    return name ? state.items.find((i) => i.id === id) : undefined;
+  // The board item this row adds to: same id, or the same kind of food.
+  function existingFor(name, category) {
+    return name ? matchItem(name, category, state.items) ?? undefined : undefined;
   }
 
   async function readPhoto(file) {
@@ -95,8 +95,8 @@ export function initScan(ctx) {
       bar.style.width = "100%";
       state.photo = { url: res.photo_url, src: shot.dataUrl, request: randomId() };
       state.rows = (res.items ?? []).map((it) => {
-        const ex = existingFor(it.name);
-        return { ...it, name: ex ? ex.name : it.name, unit: ex?.unit || it.unit };
+        const ex = existingFor(it.name, it.category);
+        return { ...it, name: ex ? ex.name : it.name, category: ex?.category || it.category, unit: ex?.unit || it.unit };
       });
       reviewView();
     } catch (err) {
@@ -122,6 +122,7 @@ export function initScan(ctx) {
 
   function reviewView() {
     active = 0;
+    $("#boardNames").innerHTML = state.items.map((i) => `<option value="${esc(i.name)}"></option>`).join("");
     $("#reviewImg").src = state.photo.src;
     show("vReview", { back: "Retake", tag: "Scan in", onBack: openCamera });
     $("#publishSay").textContent = "";
@@ -129,10 +130,10 @@ export function initScan(ctx) {
   }
 
   function statusFor(row) {
-    const ex = existingFor(row.name.trim());
+    const ex = existingFor(row.name.trim(), row.category);
     if (!row.name.trim()) return "";
-    if (!ex) return "New item";
-    return (Number(ex.qty) || 0) > 0 ? `${ex.qty} on the shelf` : "was Out";
+    if (!ex) return "New card";
+    return (Number(ex.qty) || 0) > 0 ? `Adds to ${ex.name}, ${ex.qty} on the shelf` : `Adds to ${ex.name}, was Out`;
   }
 
   function rowHtml(row, i) {
@@ -142,7 +143,7 @@ export function initScan(ctx) {
     return `
       <div class="row" data-i="${i}">
         <div style="min-width:0;flex:1">
-          <input class="edit-name" data-f="name" value="${esc(row.name)}" placeholder="Item name" maxlength="40" autocapitalize="sentences">
+          <input class="edit-name" data-f="name" list="boardNames" value="${esc(row.name)}" placeholder="Item name" maxlength="40" autocapitalize="sentences">
           <div class="sub"><span data-status>${esc(status)}</span><span data-dot>${status ? " · " : ""}</span><label class="catpick"><span data-cat>${esc(row.category)}</span>&nbsp;▾<select data-f="category" aria-label="Category">${options}</select></label></div>
         <label class="bestby">Best by <input type="date" data-f="best_by" value="${esc(row.best_by || "")}" aria-label="Best by date"></label>
         </div>
@@ -255,7 +256,7 @@ export function initScan(ctx) {
     const followers = state.today?.followers ?? {};
     const waiting = rows
       .filter((r) => r.count > 0)
-      .map((r) => existingFor(r.name.trim()))
+      .map((r) => existingFor(r.name.trim(), r.category))
       .filter((ex) => ex && (Number(ex.qty) || 0) <= 0 && followers[ex.id] > 0);
     const n = waiting.reduce((sum, ex) => sum + followers[ex.id], 0);
     $("#publishSay").textContent = "Goes live now." + (n

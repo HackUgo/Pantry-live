@@ -3,7 +3,7 @@
 // whole counts from 1 to 500. Rows naming the same item are merged so one
 // photo adds once per item.
 
-import { CATEGORIES, slug } from "../../public/js/catalog.js";
+import { CATEGORIES, matchItem, slug } from "../../public/js/catalog.js";
 import { cleanDate } from "./reader";
 
 export const MAX_ITEMS = 20;
@@ -53,4 +53,22 @@ export function cleanPublish(body: any, supabaseUrl: string): PublishInput {
   if (items.length > MAX_ITEMS) throw new PublishError(`At most ${MAX_ITEMS} items per photo.`);
   const request = typeof body?.request_id === "string" ? body.request_id.slice(0, 64) : null;
   return { photo, by, items, request };
+}
+
+// Puts each row on the board item of the same kind (rice on Rice), taking
+// that item's id, name and category, then merges rows that now share an id.
+export function onBoard(items: PublishItem[], board: { id: string; name: string; category: string | null }[]): PublishItem[] {
+  const merged = new Map<string, PublishItem>();
+  for (const it of items) {
+    const hit = matchItem(it.name, it.category || "", board);
+    const row = hit ? { ...it, id: hit.id, name: hit.name, category: hit.category || it.category } : it;
+    const prev = merged.get(row.id);
+    if (prev) {
+      prev.count += row.count;
+      if (row.best_by && (!prev.best_by || row.best_by < prev.best_by)) prev.best_by = row.best_by;
+    } else {
+      merged.set(row.id, { ...row });
+    }
+  }
+  return [...merged.values()];
 }

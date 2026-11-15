@@ -65,7 +65,7 @@ function prompt(existing: string[], width: number, height: number): string {
 Items already on the pantry board: ${known}.
 
 For each distinct product:
-- name: if it is the same product as one already on the board, use that name exactly. Otherwise a short plain name in sentence case, plural where natural, no brand and no size, for example "Bananas", "Canned corn", "Peanut butter".
+- name: the kind of food, not the brand, flavor, variety or size, so the same kind always gets the same name: any rice is Rice, any banana is Banana, any breakfast cereal is Cereal, any canned beans are Canned Beans. If that kind is already on the board, use the board's name exactly. Otherwise a short plain name in sentence case, for example "Canned corn", "Spaghetti", "Orange juice".
 - category: one of ${CATEGORIES.join(", ")}.
 - unit: the plural word for one unit, for example "cans", "boxes", "jugs", "bottles", "bags", "jars". Use "" for loose produce counted one by one, such as bananas or apples.
 - boxes: one box for every physical unit you can see, in pixel coordinates of this photo (top, left, bottom, right). Never one box for several units.
