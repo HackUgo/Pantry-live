@@ -81,7 +81,9 @@ export function unitFor(qty, unit) {
 // Rice and not on a new card. An exact id wins. Otherwise the board item whose
 // words all appear in the scanned name, in the same category, is the match,
 // the more words the better. Words like canned or fresh say nothing about
-// what the food is, so they are left out on both sides.
+// what the food is, so they are left out on both sides. Cans are told apart
+// by what is in them (black beans and kidney beans are two cards), so a
+// canned item only matches a card with exactly the same words.
 const FILLER = new Set(["canned", "can", "fresh", "organic", "whole", "large", "small", "big", "box", "bag", "pack", "jar", "bottle", "of", "and", "the", "a"]); // standards: allow (words stripped from scanned names)
 
 function singular(w) {
@@ -105,6 +107,8 @@ export function matchItem(name, category, items) {
   for (const item of items) {
     if (category && item.category && category !== item.category) continue;
     const need = words(item.name);
+    const canned = (category || item.category) === "Canned";
+    if (canned && need.length !== scanned.size) continue;
     if (need.length && need.every((w) => scanned.has(w)) && need.length > bestScore) {
       best = item;
       bestScore = need.length;

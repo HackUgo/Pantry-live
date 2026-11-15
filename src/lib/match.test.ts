@@ -18,10 +18,18 @@ test("the same kind of food lands on its card", () => {
   assert.equal(hit("Bananas", "Produce"), "banana");
   assert.equal(hit("Long grain white rice", "Grains & Pasta"), "rice");
   assert.equal(hit("Whole grain breakfast cereal", "Grains & Pasta"), "cereal");
-  assert.equal(hit("Baked beans", "Canned"), "canned-bean");
-  assert.equal(hit("Black beans", "Canned"), "canned-bean");
   assert.equal(hit("Large brown eggs", "Dairy & Eggs"), "egg");
   assert.equal(hit("Creamy peanut butter", "Protein"), "peanut-butter");
+});
+
+test("cans are told apart by what is in them", () => {
+  assert.equal(hit("Canned beans", "Canned"), "canned-bean", "the same contents join the card");
+  assert.equal(hit("Beans", "Canned"), "canned-bean");
+  assert.equal(hit("Canned black beans", "Canned"), null, "black beans get their own card");
+  assert.equal(hit("Canned baked beans", "Canned"), null);
+  const shelf = [...board, { id: "canned-black-bean", name: "Canned black beans", category: "Canned" }];
+  assert.equal(matchItem("Black beans", "Canned", shelf)?.id, "canned-black-bean");
+  assert.equal(matchItem("Canned kidney beans", "Canned", shelf), null);
 });
 
 test("a different food makes its own card", () => {
