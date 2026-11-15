@@ -117,6 +117,9 @@ export function initScan(ctx) {
 
   // ---- Review ----
 
+  // The most one scan can add to a card, the same cap the Worker holds.
+  const MAX_COUNT = 500;
+
   // Which row a tap on the photo adds to.
   let active = 0;
 
@@ -194,7 +197,7 @@ export function initScan(ctx) {
     $("#fixHint").textContent = !r ? ""
       : r.count === null
         ? `Type the count for ${name}. The units are not separate in this photo.`
-        : `Tap the photo where the reader missed ${name} to add one. Tap a box to take it away.`;
+        : `Type the full count for ${name}, including any behind the front row. Or tap the photo to add one, a box to take one away.`;
     document.querySelectorAll("#reviewRows .row").forEach((el) => el.classList.toggle("active", Number(el.dataset.i) === active));
   }
 
@@ -229,7 +232,7 @@ export function initScan(ctx) {
     }
 
     const r = state.rows[active];
-    if (!r || r.count === null) return paintFixHint();
+    if (!r || r.count === null || r.count >= MAX_COUNT) return paintFixHint();
     // Size the new box like this row's others, or a plain default.
     const hs = r.box_2d.map((b) => b[2] - b[0]).sort((a, b) => a - b);
     const ws = r.box_2d.map((b) => b[3] - b[1]).sort((a, b) => a - b);
@@ -288,9 +291,10 @@ export function initScan(ctx) {
     if (field === "category") row.category = e.target.value;
     if (field === "best_by") row.best_by = e.target.value || null;
     if (field === "count") {
-      const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
-      e.target.value = digits;
-      row.count = digits === "" ? null : Number(digits);
+      const digits = e.target.value.replace(/\D/g, "").slice(0, 3);
+      const n = digits === "" ? null : Math.min(MAX_COUNT, Number(digits));
+      e.target.value = n === null ? "" : String(n);
+      row.count = n;
     }
     syncRow(i);
   });
@@ -308,7 +312,7 @@ export function initScan(ctx) {
     if (!btn) return;
     const i = Number(btn.closest("[data-i]").dataset.i);
     const row = state.rows[i];
-    row.count = Math.max(0, (row.count ?? 0) + Number(btn.dataset.step));
+    row.count = Math.max(0, Math.min(MAX_COUNT, (row.count ?? 0) + Number(btn.dataset.step)));
     btn.parentElement.querySelector('[data-f="count"]').value = String(row.count);
     syncRow(i);
   });
