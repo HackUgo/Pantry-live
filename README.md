@@ -35,6 +35,8 @@ Database: `supabase/schema.sql` is the baseline as of Nov 15 2026 13:00, `supaba
 npm install
 npm run check      # types, Worker and tests
 npm test           # unit tests, no network
+npm run standards  # copy rules (no dashes, emoji, AI, count words) and a secret scan
+npm run ready      # all of the above, then pushes this branch; refuses main and staging
 npm run walk       # walks every route of the live site as an attacker, then as staff and a student
 npm run deploy     # wrangler deploy
 ```

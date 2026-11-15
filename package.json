@@ -9,7 +9,9 @@
     "vapid": "node tools/vapid.mjs",
     "secret:gmail": "wrangler secret put GMAIL_APP_PASSWORD",
     "test": "node scripts/test.mjs",
-    "walk": "node scripts/walk.mjs"
+    "walk": "node scripts/walk.mjs",
+    "standards": "node scripts/standards.mjs",
+    "ready": "node scripts/ready.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

@@ -178,11 +178,11 @@ function schedule() {
 
 // What arrived today, newest first, as photo tiles above the grid.
 function paintToday(all, q) {
-  const fresh = all
+  const arrivedToday = all
     .filter((i) => qtyOf(i) > 0 && i.arrived_at && isToday(i.arrived_at))
     .sort((a, b) => Date.parse(b.arrived_at) - Date.parse(a.arrived_at));
-  $("#todayRow").hidden = !fresh.length || Boolean(q);
-  $("#todayTiles").innerHTML = fresh.map((i) => `
+  $("#todayRow").hidden = !arrivedToday.length || Boolean(q);
+  $("#todayTiles").innerHTML = arrivedToday.map((i) => `
     <button class="tile" data-open="${esc(i.id)}">
       <img src="${esc(photoFor(i))}" alt="" loading="lazy">
       <span class="tile-name">${esc(i.name)}</span>

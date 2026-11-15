@@ -78,7 +78,7 @@ export function unitFor(qty, unit) {
 // words all appear in the scanned name, in the same category, is the match,
 // the more words the better. Words like canned or fresh say nothing about
 // what the food is, so they are left out on both sides.
-const FILLER = new Set(["canned", "can", "fresh", "organic", "whole", "large", "small", "big", "box", "bag", "pack", "jar", "bottle", "of", "and", "the", "a"]);
+const FILLER = new Set(["canned", "can", "fresh", "organic", "whole", "large", "small", "big", "box", "bag", "pack", "jar", "bottle", "of", "and", "the", "a"]); // standards: allow (words stripped from scanned names)
 
 function singular(w) {
   if (w.length > 4 && w.endsWith("ies")) return `${w.slice(0, -3)}y`;
