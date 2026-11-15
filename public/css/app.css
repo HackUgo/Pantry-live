@@ -274,7 +274,7 @@ a { color: inherit; }
   padding: calc(24px + env(safe-area-inset-top)) var(--gutter) calc(24px + env(safe-area-inset-bottom));
 }
 .join .brandline { display: flex; align-items: center; gap: 8px; }
-.join .lede { margin-top: 12px; font-size: 16px; line-height: 1.5; }
+.join-line { margin: 28px 0 0; font-size: 22px; line-height: 1.35; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; }
 
 /* ---------- Sheets ---------- */
 
