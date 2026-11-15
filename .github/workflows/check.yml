@@ -1,0 +1,16 @@
+# Runs on every push and pull request: the type check (Worker and tests) and
+# the unit tests. No network, no secrets: the reader test uses a recorded answer.
+name: check
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
