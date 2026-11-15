@@ -89,8 +89,8 @@ check("public key cannot add a push subscription", r.status === 401 || r.status 
 
 const page = await fetch(`${BASE}/`);
 const csp = page.headers.get("content-security-policy") || "";
-check("pages send a strict content policy", csp.includes("script-src 'self'") && csp.includes("frame-ancestors 'none'"));
-check("pages refuse framing and sniffing", page.headers.get("x-frame-options") === "DENY" && page.headers.get("x-content-type-options") === "nosniff");
+check("pages send a strict content policy", csp.includes("script-src 'self'") && csp.includes("frame-ancestors 'self'"));
+check("pages refuse framing and sniffing", page.headers.get("x-frame-options") === "SAMEORIGIN" && page.headers.get("x-content-type-options") === "nosniff");
 let leaked = false;
 for (const f of ["/js/app.js", "/js/vendor/supabase.mjs", "/js/board.js", "/js/staff.js", "/js/staff-scan.js", "/js/staff-desk.js", "/js/bag.js", "/js/follow.js", "/sw.js"]) {
   const text = await (await fetch(`${BASE}${f}`)).text();

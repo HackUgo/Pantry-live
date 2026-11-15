@@ -78,7 +78,7 @@ function cardHtml(i) {
   const name = esc(i.name);
   const max = Math.min(Number(i.max_per_pickup) || 2, qty);
   const photo = `<img class="photo" src="${esc(photoFor(i))}" alt="${name}" loading="lazy">` +
-    (i.photo_url ? "" : `<span class="stock-tag">Stock photo</span>`);
+    (i.photo_url || inBag ? "" : `<span class="stock-tag">Stock photo</span>`);
   const count = out
     ? `<div class="count">Out</div>`
     : `<div class="count">${qty}${i.unit ? `<small>${esc(unitFor(qty, i.unit))}</small>` : ""}</div>`;
@@ -142,10 +142,11 @@ function paintBoard() {
   const cats = CATEGORIES.filter((c) => all.some((i) => i.category === c));
   if (filter !== "All" && !cats.includes(filter)) filter = "All";
   $("#chips").innerHTML =
-    `<button class="chip" data-cat="All" aria-pressed="${filter === "All"}">All · ${all.length}</button>` +
-    cats.map((c) => `<button class="chip chip-img" data-cat="${esc(c)}" aria-pressed="${filter === c}" style="--cat:${catColor(c)}">` +
-      `<img src="${esc(CATEGORY_IMAGES[c])}" alt="" loading="lazy">` +
-      `<span class="only-phone">${esc(SHORT[c] || c)}</span><span class="only-laptop">${esc(c)}</span></button>`).join("");
+    `<button class="bubble" data-cat="All" aria-pressed="${filter === "All"}">` +
+      `<span class="bubble-img">${all.length}</span><span class="bubble-label">All items</span></button>` +
+    cats.map((c) => `<button class="bubble" data-cat="${esc(c)}" aria-pressed="${filter === c}" style="--cat:${catColor(c)}">` +
+      `<span class="bubble-img"><img src="${esc(CATEGORY_IMAGES[c])}" alt="" loading="lazy"></span>` +
+      `<span class="bubble-label">${esc(SHORT[c] || c)}</span></button>`).join("");
   const q = query.trim().toLowerCase();
   const inCat = filter === "All" ? all : all.filter((i) => i.category === filter);
   const shown = sorted(q ? inCat.filter((i) => i.name.toLowerCase().includes(q)) : inCat);
