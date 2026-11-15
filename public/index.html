@@ -31,7 +31,7 @@
       </div>
       <h1 class="title board-title">Student Food Pantry</h1>
       <p class="lede only-phone" id="openLine"></p>
-      <p class="lede only-laptop">Everything on the shelf right now, photographed as it arrived. Reserve for pickup or walk in.</p>
+      <p class="lede only-laptop">Everything on the shelf right now. Reserve for pickup or just walk in.</p>
       <div class="board-hours" id="weekHours"></div>
     </header>
 
@@ -41,7 +41,7 @@
       <div class="section-title"><h2>New on the shelf today</h2><p>Scanned in by staff this shift</p></div>
       <div class="tiles" id="todayTiles"></div>
     </section>
-    <div class="section-title"><h2>On the shelf</h2><p>Live counts, photographed as they arrived</p></div>
+    <div class="section-title"><h2>On the shelf</h2><p>Live counts. Tap + to put it in your bag.</p></div>
     <section class="grid" id="board" aria-live="polite"></section>
     <p class="muted" id="searchEmpty" hidden style="margin-top:20px"></p>
     <p class="muted" id="boardEmpty" hidden style="margin-top:24px">Nothing on the board yet. Staff photograph items as they arrive.</p>
@@ -96,12 +96,12 @@
   <section class="join" id="joinScreen" hidden aria-labelledby="joinTitle">
     <form class="join-box" id="joinForm" novalidate>
       <div class="brandline"><img class="logo" src="/icons/logo.svg" alt="" width="26" height="26"><span class="micro">Pantry Live</span></div>
-      <h1 class="title" id="joinTitle" style="margin-top:28px">Get told when food comes in</h1>
-      <p class="lede">Your school email is all we ask. The Student Food Pantry emails you when food arrives and when your pickup is ready.</p>
+      <h1 class="title" id="joinTitle" style="margin-top:28px">Free food, and you hear first</h1>
+      <p class="lede">The Student Food Pantry is free for every student. Add your school email and we send you a note when new food is on the shelf and when your pickup is ready. No account, no password.</p>
       <input class="field" id="joinEmail" type="email" inputmode="email" autocomplete="email" placeholder="School email, ending in .edu" style="margin-top:22px" required>
       <p class="hint" id="joinSay" role="status"></p>
-      <button class="btn btn-primary" id="joinBtn" type="submit" style="margin-top:16px">Continue</button>
-      <button class="btn btn-text" id="joinSkip" type="button">Not now</button>
+      <button class="btn btn-primary" id="joinBtn" type="submit" style="margin-top:16px">Email me when food comes in</button>
+      <button class="btn btn-text" id="joinSkip" type="button">Just show me the shelf</button>
     </form>
   </section>
 

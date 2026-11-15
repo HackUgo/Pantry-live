@@ -47,7 +47,7 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 img { display: block; max-width: 100%; }
-button, input, select { font: inherit; color: inherit; }
+button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 a { color: inherit; }
 [hidden] { display: none !important; }
@@ -57,7 +57,7 @@ a { color: inherit; }
 
 .micro { font-size: 15px; font-weight: 700; color: var(--text); }
 .muted { color: var(--muted); }
-.title { margin: 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.title { margin: 0; font-size: 28px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; overflow-wrap: anywhere; text-wrap: balance; }
 .lede { margin: 4px 0 0; color: var(--muted); font-size: 15px; }
 .lede b { color: var(--text); font-weight: 600; }
 .hint { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
@@ -75,6 +75,7 @@ a { color: inherit; }
 .live::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
 .live.on { color: var(--green-ink); }
 .live.on::before { background: var(--green); }
+.live:empty { display: none; }
 
 /* ---------- Bars ---------- */
 
@@ -227,7 +228,7 @@ a { color: inherit; }
 .board-head .side .tag-line { height: 36px; padding: 0 16px; font-size: 14px; }
 .board-title { margin-top: 10px; font-size: 28px; }
 .board-hours { display: none; }
-.board-chips { margin-top: 18px; }
+.bubbles.board-chips { margin-top: 18px; }
 
 /* Categories: a small photo with a label, no rings. */
 .bubbles { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter); }
@@ -273,6 +274,7 @@ a { color: inherit; }
   padding: calc(24px + env(safe-area-inset-top)) var(--gutter) calc(24px + env(safe-area-inset-bottom));
 }
 .join .brandline { display: flex; align-items: center; gap: 8px; }
+.join .lede { margin-top: 12px; font-size: 16px; line-height: 1.5; }
 
 /* ---------- Sheets ---------- */
 
@@ -289,6 +291,7 @@ a { color: inherit; }
 .sheet-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-top: 16px; }
 .sheet-head h2 { margin: 0; font-size: 24px; font-weight: 700; letter-spacing: -0.01em; overflow-wrap: anywhere; }
 .sheet-head .big { font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; }
+.sheet-head .big small { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--muted); letter-spacing: 0; text-align: right; }
 .sheet .say-line { margin: 12px 0 0; font-size: 15px; }
 .howmany { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 20px 0; font-weight: 600; font-size: 16px; }
 
@@ -327,7 +330,6 @@ a { color: inherit; }
 /* Who is on the shelf. */
 .names { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .name-pill { height: 44px; padding: 0 18px; border-radius: 999px; border: 0; background: var(--surface-2); font-size: 16px; font-weight: 600; }
-.name-pill.else { color: var(--muted); }
 .name-pill[aria-pressed="true"] { background: var(--text); color: var(--on-brand); }
 
 /* Reading and review. */

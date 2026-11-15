@@ -29,7 +29,7 @@ export function openTellMe(ctx, item) {
     ctx.openSheet(`
       <h2 style="margin:0;font-size:26px;letter-spacing:-0.02em">You are on the list for ${esc(lower)}</h2>
       <p class="muted" style="margin:6px 0 0">${esc(since)}</p>
-      <p class="say-line">One ${store.following[item.id] === "push" ? "ping to this phone" : "email"} the moment staff scan ${esc(lower)} in. Then it ends.</p>
+      <p class="say-line">One ${store.following[item.id] === "push" ? "alert to this phone" : "email"} the moment staff scan ${esc(lower)} in. Then it ends.</p>
       <div style="margin-top:22px"><button class="btn btn-quiet" id="tellClose">Back to the board</button></div>`);
     $("#tellClose").onclick = ctx.closeSheet;
     return;
@@ -38,13 +38,13 @@ export function openTellMe(ctx, item) {
   ctx.openSheet(`
     <h2 style="margin:0;font-size:26px;letter-spacing:-0.02em">Tell me when ${esc(lower)} arrive</h2>
     <p class="muted" style="margin:6px 0 0">${esc(since)}</p>
-    <p class="say-line">One email or ping the moment staff scan ${esc(lower)} in. Then it ends.</p>
+    <p class="say-line">One email or phone alert the moment staff scan ${esc(lower)} in. Then it ends.</p>
     <div class="micro" style="margin:22px 0 10px">Where should it go?</div>
     <input class="field" id="tellEmail" type="email" inputmode="email" autocomplete="email" placeholder="CMU email" value="${esc(store.me.email || "")}">
     <p class="hint">Kept only to send this one message, then deleted.</p>
     <div style="margin-top:18px">
-      <button class="btn btn-primary" id="tellBtn">Tell me</button>
-      <button class="btn btn-text" id="pingBtn">Ping this phone instead</button>
+      <button class="btn btn-primary" id="tellBtn">Email me once</button>
+      <button class="btn btn-text" id="pingBtn">Alert this phone instead</button>
       <p class="hint" id="tellSay" role="status" style="text-align:center"></p>
     </div>`);
 

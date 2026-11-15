@@ -220,8 +220,8 @@ function openItem(id) {
     ${photo}
     <div class="sheet-head">
       <div><h2>${esc(i.name)}</h2>
-        <div class="muted">${esc(i.arrived_at ? `Arrived ${formatTime(i.arrived_at)}${i.photo_url ? ", this photo" : ""}.` : "")} ${esc(catLabel(i.category))}.</div></div>
-      <div class="big">${qtyOf(i)}</div>
+        <div class="muted">${esc([catLabel(i.category), i.arrived_at ? `arrived ${formatTime(i.arrived_at)}` : ""].filter(Boolean).join(" · "))}</div></div>
+      <div class="big">${qtyOf(i)}${i.unit ? `<small>${esc(unitFor(qtyOf(i), i.unit))}</small>` : ""}</div>
     </div>
     ${i.best_by ? `<p class="muted" style="margin:10px 0 0">Best by ${esc(formatDay(i.best_by))}, as printed on the pack.</p>` : ""}
     <p class="say-line">Take up to ${max} per pickup. ${esc(when)}</p>
