@@ -1,7 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Pantry Live staff">
-  <!-- Pantry Live staff mark: a two shelf pantry with goods stacked on it. -->
-  <rect width="32" height="32" rx="7" fill="#000"/>
-  <g fill="#fff">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- The Pantry Live logo, full bleed with room around it, for home screen icons phones crop. -->
+  <rect width="32" height="32" fill="#000"/>
+  <g transform="translate(16 16) scale(0.72) translate(-16 -16)">
+<g fill="#fff">
     <!-- the shelves and the uprights -->
     <rect x="5" y="15" width="22" height="1.6" rx="0.4"/>
     <rect x="5" y="25.4" width="22" height="1.6" rx="0.4"/>
@@ -17,5 +18,6 @@
     <rect x="13.6" y="21" width="3" height="4.4" rx="0.8"/>
     <rect x="17.2" y="21" width="3" height="4.4" rx="0.8"/>
     <path d="M21.2 25.4l.5-6.2h2.6l.5 6.2z"/>
+  </g>
   </g>
 </svg>

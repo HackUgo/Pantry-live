@@ -10,7 +10,8 @@
   <title>Student Food Pantry</title>
   <meta name="description" content="Everything on the Student Food Pantry shelf right now, photographed as it arrived.">
   <link rel="manifest" href="/manifest.webmanifest">
-  <link rel="icon" href="/icons/icon-192.png">
+  <link rel="icon" href="/icons/logo.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/icons/icon-192.png">
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
   <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/css/app.css">
@@ -20,7 +21,7 @@
   <main class="page" id="vBoard">
     <header>
       <div class="board-head">
-        <div class="brandline"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="micro">Pantry Live</span></div>
+        <div class="brandline"><img class="logo" src="/icons/logo.svg" alt="" width="26" height="26"><span class="micro">Pantry Live</span></div>
         <div class="side">
           <span class="live only-phone" id="live">Live</span>
           <span class="tag-line only-laptop" id="followPill" hidden></span>
@@ -94,7 +95,7 @@
   <!-- The only onboarding: a school email, once -->
   <section class="join" id="joinScreen" hidden aria-labelledby="joinTitle">
     <form class="join-box" id="joinForm" novalidate>
-      <div class="brandline"><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><span class="micro">Pantry Live</span></div>
+      <div class="brandline"><img class="logo" src="/icons/logo.svg" alt="" width="26" height="26"><span class="micro">Pantry Live</span></div>
       <h1 class="title" id="joinTitle" style="margin-top:28px">Get told when food comes in</h1>
       <p class="lede">Your school email is all we ask. The Student Food Pantry emails you when food arrives and when your pickup is ready.</p>
       <input class="field" id="joinEmail" type="email" inputmode="email" autocomplete="email" placeholder="School email, ending in .edu" style="margin-top:22px" required>
