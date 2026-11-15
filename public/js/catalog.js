@@ -61,13 +61,59 @@ export const ITEM_IMAGES = {
   "rice": "/images/items/rice.webp",
   "cereal": "/images/items/cereal.webp",
   "peanut-butter": "/images/items/peanut-butter.webp",
+  "coconut-milk": "/images/items/coconut-milk.webp",
+  "pasta-sauce": "/images/items/pasta-sauce.webp",
+  "cookie": "/images/items/cookie.webp",
+  "orange": "/images/items/orange.webp",
+  "pita-bread": "/images/items/pita-bread.webp",
+  "tomato": "/images/items/tomato.webp",
+  "corn": "/images/items/corn.webp",
+  "mackerel": "/images/items/mackerel.webp",
 };
 
-// The item's own picture (plural ids find the singular), then its category.
+// Names the reader writes in many ways ("Canned coconut milk", "Spaghetti
+// sauce", "Chocolate chip cookies") find their picture by words. The first rule
+// whose words are all in the name wins, unless the name holds one of its "not"
+// words (orange juice is not an orange). Most specific rules first.
+const WORD_IMAGES = [
+  { all: ["coconut", "milk"], img: "coconut-milk" },
+  { all: ["peanut", "butter"], img: "peanut-butter" },
+  { all: ["spaghetti", "sauce"], img: "pasta-sauce" },
+  { all: ["pasta", "sauce"], img: "pasta-sauce" },
+  { all: ["marinara"], img: "pasta-sauce" },
+  { all: ["cookie"], img: "cookie" },
+  { all: ["cooky"], img: "cookie" }, // "cookies" made singular
+  { all: ["biscuit"], img: "cookie" },
+  { all: ["pita"], img: "pita-bread" },
+  { all: ["mackerel"], img: "mackerel" },
+  { all: ["sardine"], img: "mackerel" },
+  { all: ["tomato"], img: "tomato", not: ["juice", "soup"] },
+  { all: ["corn"], img: "corn", not: ["flake", "cereal"] },
+  { all: ["orange"], img: "orange", not: ["juice"] },
+  { all: ["banana"], img: "banana" },
+  { all: ["rice"], img: "rice", not: ["cake", "krispie"] },
+  { all: ["cereal"], img: "cereal" },
+  { all: ["bean"], img: "canned-bean", not: ["coffee", "green"] },
+  { all: ["egg"], img: "egg", not: ["noodle"] },
+  { all: ["milk"], img: "milk", not: ["chocolate"] },
+];
+
+function imageByWords(name) {
+  const have = new Set(words(name));
+  for (const rule of WORD_IMAGES) {
+    if (rule.all.every((w) => have.has(w)) && !(rule.not || []).some((w) => have.has(w))) {
+      return ITEM_IMAGES[rule.img];
+    }
+  }
+  return null;
+}
+
+// The item's own picture (plural ids find the singular), then a picture found
+// by the words in its name, then its category.
 export function photoFor(item) {
   const id = String(item?.id || "");
   return ITEM_IMAGES[id] || ITEM_IMAGES[id.replace(/e?s$/, "")] || ITEM_IMAGES[id.replace(/s$/, "")]
-    || CATEGORY_IMAGES[item?.category] || CATEGORY_IMAGES.Other;
+    || imageByWords(item?.name) || CATEGORY_IMAGES[item?.category] || CATEGORY_IMAGES.Other;
 }
 // "1 jug", "2 jugs", "1 box", "1 bunch": units are stored plural.
 export function unitFor(qty, unit) {
