@@ -1,0 +1,48 @@
+// One Worker serves the pages in ./public and the API under /api/*.
+// Secrets are never written here. They are set with `wrangler secret put`:
+// ANTHROPIC_API_KEY, SUPABASE_SERVICE_ROLE_KEY, VAPID_PRIVATE_KEY, GMAIL_APP_PASSWORD,
+// STAFF_PIN, GMAIL_USER (the sending address) and STAFF_ALERT_EMAIL (the desk inbox).
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pantry-live",
+  // The cmich Cloudflare account, which owns the twokriks.workers.dev subdomain.
+  "account_id": "2547c2526cc2b642cbec6091a042d129",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Cloudflare's rate limiting binding: 20 requests per 60 seconds per key.
+  // The Worker keys it by client IP. If the binding is missing the Worker
+  // falls back to a small in memory limiter per isolate (src/lib/ratelimit.ts).
+  "ratelimits": [
+    { "name": "RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 20, "period": 60 } }
+  ],
+
+  // Every 15 minutes: after closing, holds still waiting go back on the board.
+  "triggers": { "crons": ["*/15 * * * *"] },
+
+  "vars": {
+    "SITE_URL": "https://pantry-live.twokriks.workers.dev",
+    "SUPABASE_URL": "https://tcjqrtvupiesddusclkc.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_tQ3d55IZAh-QP6jsWngtHw_YLE48ejr",
+    // The Anthropic model that reads scan photos.
+    "READER_MODEL": "claude-opus-5-5",
+    // Paste the public key printed by `npm run vapid` here.
+    "VAPID_PUBLIC_KEY": "BM9_dGuy5a5_CIj704ufAgxSz85AahJWCfLOrls9Q9jbstN6M7TiMhxP6PVZTbMkuGOrvF-M7COSjWSVpdMFEnc",
+    // A mailto: address or the site URL. Push services use it to reach the sender.
+    "VAPID_SUBJECT": "https://pantry-live.twokriks.workers.dev",
+    "TIME_ZONE": "America/Detroit",
+    "PLACE": "Robinson Hall",
+    // Opening hours, 24 hour clock, pantry time zone. Add a day here to open it.
+    // "sun" is the demo day, Sunday Nov 15 2026, 9:00 am to 7:00 pm. It comes out after.
+    "PANTRY_HOURS": "{\"sun\":[\"09:00\",\"19:00\"],\"mon\":[\"12:00\",\"15:00\"],\"tue\":[\"16:00\",\"19:00\"],\"wed\":[\"14:00\",\"17:00\"],\"thu\":[\"14:00\",\"17:00\"],\"fri\":[\"12:00\",\"15:00\"]}"
+  }
+}

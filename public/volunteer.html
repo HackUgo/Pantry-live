@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="robots" content="noindex">
+  <title>Pantry Live staff</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/logo.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="back" id="back" hidden></button>
+    <span class="brand" id="brand"><img class="logo" src="/icons/logo.svg" alt="" width="28" height="28">Pantry Live</span>
+    <span class="pill-tag" id="tag">Staff</span>
+  </header>
+
+  <main class="staff-page">
+    <!-- Sign in -->
+    <section id="vPin" hidden>
+      <div class="pin-wrap">
+        <h1 class="title" style="font-size:26px">Staff sign in</h1>
+        <p class="lede">The PIN is on the desk. Four digits, it unlocks on the last one.</p>
+        <div class="pin" id="pinBoxes">
+          <span></span><span></span><span></span><span></span>
+          <input id="pinInput" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="Staff PIN">
+        </div>
+        <p class="say" id="pinSay" role="status"></p>
+      </div>
+    </section>
+
+    <!-- Who is on the shelf -->
+    <section id="vWho" hidden>
+      <h1 class="title" style="font-size:28px">Who is on the shelf?</h1>
+      <p class="lede" id="whoLede">Your name goes on every photo you publish, so the log says who checked what.</p>
+      <div class="names" id="names"></div>
+      <input class="field" id="otherName" placeholder="Your name" maxlength="30" autocomplete="name" style="margin-top:14px" hidden>
+      <div class="foot-actions" style="margin-top:40vh">
+        <button class="btn btn-primary" id="continue" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- Today -->
+    <section id="vToday" hidden>
+      <h1 class="title" style="font-size:28px" id="todayClock"></h1>
+      <p class="lede" id="todayLede"></p>
+      <div class="box-card" id="pickupsCard">
+        <div><div class="name">Pickups</div><div class="muted" id="pickupsLine"></div></div>
+        <button class="tag-line" id="pickupsOpen" style="height:40px;padding:0 18px;font-size:15px;white-space:nowrap;flex:none">Open ›</button>
+      </div>
+      <div class="box-card">
+        <div><div class="name">Email students</div><div class="muted" id="signedUp">Everyone signed up, today's pickups, or students waiting on an item</div></div>
+        <button class="tag-line" id="messageOpen" style="height:40px;padding:0 18px;font-size:15px;white-space:nowrap;flex:none">Write ›</button>
+      </div>
+      <div class="section-head micro"><span>Arrived today</span><span>On shelf</span></div>
+      <div class="rows" id="arrived"></div>
+      <button class="btn btn-danger" id="removeToday" hidden>Remove everything scanned today</button>
+      <p class="hint" id="removeSay" role="status"></p>
+      <p class="muted" id="outNotes" style="margin:14px 0 0"></p>
+      <div class="foot-actions" style="margin-top:28px">
+        <button class="btn btn-primary" id="scanBtn">Scan items in</button>
+        <div class="links"><a href="/">Open the board</a><span>·</span><button id="signOut">Sign out</button></div>
+      </div>
+    </section>
+
+    <!-- Reading -->
+    <section id="vReading" hidden>
+      <div class="shot"><img id="readingImg" alt="The photo being read"></div>
+      <div class="working"><span class="spin" aria-hidden="true"></span><span id="readingSay">Reading the photo</span></div>
+      <div class="bar"><i id="readingBar"></i></div>
+      <p class="muted" style="margin:12px 0 0">Naming each item and counting. About 5 seconds. Cancel publishes nothing.</p>
+    </section>
+
+    <!-- Review -->
+    <section id="vReview" hidden>
+      <div class="shot" id="reviewShot">
+        <img id="reviewImg" alt="The photo with a box on each item">
+        <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" id="boxes" aria-hidden="true"></svg>
+      </div>
+      <p class="hint" id="fixHint" style="text-align:center"></p>
+      <div class="section-head micro"><span>In the photo</span><span>Count, fix if wrong</span></div>
+      <div class="rows" id="reviewRows"></div>
+      <datalist id="boardNames"></datalist>
+      <button class="add-line" id="addRow">Add an item by hand</button>
+      <p class="muted" style="margin:14px 0 0">This photo becomes the picture students see for each of these items.</p>
+      <div class="foot-actions" style="margin-top:28px">
+        <button class="btn btn-primary" id="publish" disabled>Put on the board</button>
+        <p class="hint" id="publishSay" style="text-align:center" role="status"></p>
+      </div>
+    </section>
+    <!-- Pickups -->
+    <section id="vPickups" hidden>
+      <h1 class="title" style="font-size:30px">Pickups</h1>
+      <p class="lede">Ask for their code or name, hand the food over, then tap Handed over.</p>
+      <input class="field" id="pickSearch" placeholder="Code or name" autocomplete="off" autocapitalize="characters" style="margin-top:16px">
+      <div class="micro" style="margin:18px 0 4px" id="waitingHead">Waiting</div>
+      <div class="rows" id="waitingRows"></div>
+      <button class="btn btn-danger" id="releaseWaiting" hidden style="margin-top:6px">Release everyone still waiting</button>
+      <p class="hint" id="releaseSay" role="status"></p>
+      <div class="micro" style="margin:22px 0 4px" id="doneHead">Done today</div>
+      <div class="rows" id="doneRows"></div>
+    </section>
+
+    <!-- Hand over -->
+    <section id="vHand" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px">
+        <div><h1 class="title" style="font-size:30px" id="handName"></h1><p class="lede" id="handLede"></p></div>
+        <span class="live on">Here</span>
+      </div>
+      <div class="section-head micro"><span>Hand over</span><span>Got it</span></div>
+      <div class="rows" id="handRows"></div>
+      <p class="muted" style="margin:14px 0 0">Something not handed over? Untick it and it goes back on the board for everyone.</p>
+      <div class="foot-actions" style="margin-top:28px">
+        <button class="btn btn-primary" id="handBtn">Handed over</button>
+        <button class="btn btn-danger" id="noShowBtn">Did not come, release the items</button>
+        <p class="hint" id="handSay" role="status" style="text-align:center"></p>
+      </div>
+    </section>
+
+    <!-- Email students -->
+    <section id="vMessage" hidden>
+      <h1 class="title" style="font-size:30px">Email students</h1>
+      <p class="lede">Sent from the pantry's email. Each student gets their own copy, so nobody sees anyone else's address.</p>
+      <div class="micro" style="margin:22px 0 10px">Who gets it</div>
+      <div class="names" id="msgAudience" style="margin-top:0">
+        <button class="name-pill" data-aud="both" aria-pressed="true">Everyone signed up</button>
+        <button class="name-pill" data-aud="pickups" aria-pressed="false">Pickups today</button>
+        <button class="name-pill" data-aud="waiting" aria-pressed="false">Waiting on an item</button>
+      </div>
+      <p class="hint" id="msgCount"></p>
+      <div class="micro" style="margin:22px 0 10px">Message</div>
+      <textarea class="field area" id="msgText" maxlength="1000" placeholder="For example: Rice and milk just came in. We are open until 7:00 pm in Robinson Hall."></textarea>
+      <p class="hint" id="msgLen">0 of 1,000</p>
+      <div class="foot-actions" style="margin-top:24px">
+        <button class="btn btn-primary" id="msgSend" disabled>Send</button>
+        <p class="hint" id="msgSay" role="status" style="text-align:center"></p>
+      </div>
+    </section>
+
+    <!-- Published -->
+    <section id="vPublished" hidden>
+      <h1 class="title" style="font-size:30px" id="pubTitle">On the board.</h1>
+      <p class="lede" id="pubLede"></p>
+      <div class="box-card" id="undoCard">
+        <div id="undoText"></div>
+        <button class="btn-text" id="undoBtn" style="color:var(--text);font-weight:600;font-size:16px;background:none;border:0;padding:8px 0 8px 12px">Undo</button>
+      </div>
+      <div class="box-card" style="display:block">
+        <div class="micro" style="margin-bottom:4px">Now on the shelf</div>
+        <div id="pubRows"></div>
+      </div>
+      <div class="foot-actions" style="margin-top:28px">
+        <button class="btn btn-primary" id="scanNext">Scan the next items</button>
+        <div class="links"><button id="backToday">Back to today</button></div>
+      </div>
+    </section>
+  </main>
+
+  <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+
+  <script type="module" src="/js/staff.js"></script>
+</body>
+</html>

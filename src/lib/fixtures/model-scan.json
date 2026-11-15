@@ -1,0 +1,17 @@
+{
+  "id": "msg_fixture",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-opus-5-5",
+  "stop_reason": "end_turn",
+  "usage": {
+    "input_tokens": 1800,
+    "output_tokens": 420
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"items\": [{\"name\": \"bananas\", \"category\": \"Produce\", \"unit\": \"\", \"boxes\": [{\"top\": 96, \"left\": 96, \"bottom\": 320, \"right\": 200}, {\"top\": 96, \"left\": 220, \"bottom\": 320, \"right\": 330}, {\"top\": 900, \"left\": 10, \"bottom\": 800, \"right\": 50}], \"count\": 5, \"confidence\": 0.9, \"best_by\": null}, {\"name\": \"Canned corn\", \"category\": \"Canned\", \"unit\": \"Cans\", \"boxes\": [{\"top\": 640, \"left\": 480, \"bottom\": 1280, \"right\": 960}], \"count\": null, \"confidence\": 0.6, \"best_by\": \"2027-03-14\"}, {\"name\": \"Mystery\", \"category\": \"Snacks\", \"unit\": \"boxes\", \"boxes\": [], \"count\": 2, \"confidence\": 0.4, \"best_by\": \"a long time from now\"}, {\"name\": \" \", \"category\": \"Produce\", \"unit\": \"\", \"boxes\": [], \"count\": 1, \"confidence\": 1, \"best_by\": null}]}"
+    }
+  ]
+}
