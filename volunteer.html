@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pantry Live · Volunteer</title>
+  <link rel="stylesheet" href="js/style.css">
+</head>
+<body>
+  <header>
+    <h1>Pantry <span>Live</span> · Volunteer</h1>
+    <p>Snap the shelf. Check the list. Tap confirm.</p>
+  </header>
+  <main>
+    <div class="panel">
+      <div class="modes">
+        <button id="modeShelf" class="active">🧺 Shelf check</button>
+        <button id="modeRestock">📦 Restock</button>
+      </div>
+      <p class="hint" id="modeHint">Shelf check: the photo shows what's on the shelf now. Counts are replaced.</p>
+      <label class="photo">📷 Take or choose a photo
+        <input type="file" id="photo" accept="image/*" capture="environment">
+      </label>
+      <img id="preview" alt="Photo preview">
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="panel" id="reviewPanel" style="display:none">
+      <h3 style="margin-top:0">Check what the AI saw</h3>
+      <p class="hint">Fix anything wrong. Leave the count blank if you can't count it.</p>
+      <div id="rows"></div>
+      <div id="missing"></div>
+      <div class="actions">
+        <button class="secondary" id="addRow">+ Add item</button>
+        <button id="confirm">✅ Confirm &amp; update board</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a class="btn" href="./" style="text-decoration:none">View board</a>
+      <button class="secondary" id="resetDemo">Reset demo shelf</button>
+    </div>
+  </main>
+
+  <script type="module">
+    import { sb, LEVELS, LEVEL_LABEL, CATEGORIES, slug, levelFromCount, maxLevel, esc } from "./js/common.js";
+    import { VOLUNTEER_PIN } from "./js/supabase-config.js";
+
+    // --- PIN gate (demo only) ---
+    let unlocked = false;
+    try { unlocked = sessionStorage.getItem("pl-pin") === "ok"; } catch {}
+    if (!unlocked) {
+      const pin = prompt("Volunteer PIN");
+      if (pin !== VOLUNTEER_PIN) { document.body.innerHTML = "<main><p class='empty'>Wrong PIN. Refresh to try again.</p></main>"; throw new Error("locked"); }
+      try { sessionStorage.setItem("pl-pin", "ok"); } catch {}
+    }
+
+    const $ = (id) => document.getElementById(id);
+    let mode = "shelf";
+    let existing = new Map(); // slug -> item data
+    let lastNotes = "";
+
+    function setMode(m) {
+      mode = m;
+      $("modeShelf").classList.toggle("active", m === "shelf");
+      $("modeRestock").classList.toggle("active", m === "restock");
+      $("modeHint").textContent = m === "shelf"
+        ? "Shelf check: the photo shows what's on the shelf now. Counts are replaced."
+        : "Restock: the photo shows a delivery coming in. Counts are added on top.";
+    }
+    $("modeShelf").onclick = () => setMode("shelf");
+    $("modeRestock").onclick = () => setMode("restock");
+
+    function status(msg, kind = "") { $("status").textContent = msg; $("status").className = "status " + kind; }
+
+    async function loadExisting() {
+      const { data, error } = await sb.from("items").select("*");
+      if (error) throw new Error(error.message);
+      existing = new Map(data.map((row) => [row.id, row]));
+    }
+
+    // Resize to max 1024px so uploads are fast and small.
+    async function toJpegBase64(file) {
+      const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+      const scale = Math.min(1, 1024 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(bmp.width * scale);
+      c.height = Math.round(bmp.height * scale);
+      c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+      const url = c.toDataURL("image/jpeg", 0.8);
+      $("preview").src = url; $("preview").style.display = "block";
+      return url.split(",")[1];
+    }
+
+    $("photo").onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      $("reviewPanel").style.display = "none";
+      try {
+        status("Reading the photo…");
+        const [image] = await Promise.all([toJpegBase64(file), loadExisting()]);
+        const names = [...existing.values()].map((x) => x.name);
+        const r = await fetch("/api/scan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image, mode, existingItems: names }),
+        });
+        const data = await r.json();
+        if (data.error) throw new Error(data.error);
+        lastNotes = data.notes || "";
+        showReview(data.items || []);
+        status(data.items.length
+          ? `Found ${data.items.length} item(s).${lastNotes ? " Note: " + lastNotes : ""}`
+          : "No food found. Add items by hand or retake the photo.", data.items.length ? "ok" : "err");
+      } catch (err) {
+        status("Couldn't read the photo: " + err.message + ". Try again or add items by hand.", "err");
+        showReview([]);
+      } finally {
+        e.target.value = "";
+      }
+    };
+
+    function rowHtml(it) {
+      const isNew = !existing.has(slug(it.name));
+      const levelOpts = LEVELS.map((l) => `<option value="${l}" ${l === it.level ? "selected" : ""}>${LEVEL_LABEL[l]}</option>`).join("");
+      const catOpts = CATEGORIES.map((c) => `<option ${c === it.category ? "selected" : ""}>${esc(c)}</option>`).join("");
+      return `<div class="row" data-unit="${esc(it.unit || "")}">
+        <input type="checkbox" class="inc" checked title="Include">
+        <input class="emo" value="${esc(it.emoji || "📦")}" maxlength="4">
+        <div><input class="nm" value="${esc(it.name)}">${isNew ? '<span class="new">NEW</span>' : ""}
+          <select class="cat" style="margin-top:4px">${catOpts}</select></div>
+        <input class="ct" type="number" min="0" placeholder="?" value="${it.count ?? ""}">
+        <select class="lv">${levelOpts}</select>
+      </div>`;
+    }
+
+    function showReview(items) {
+      $("rows").innerHTML = items.map(rowHtml).join("");
+      // Shelf check: offer to mark known items that weren't seen as Out.
+      const seen = new Set(items.map((i) => slug(i.name)));
+      const notSeen = mode === "shelf" ? [...existing.entries()].filter(([id, v]) => !seen.has(id) && v.level !== "out") : [];
+      $("missing").innerHTML = notSeen.length
+        ? `<p class="hint" style="margin-top:14px">Not in this photo. Tick any that are now <b>out</b>:</p>` +
+          notSeen.map(([id, v]) => `<label style="display:block;margin:4px 0"><input type="checkbox" class="mo" value="${esc(id)}"> ${esc(v.emoji || "")} ${esc(v.name)}</label>`).join("")
+        : "";
+      $("reviewPanel").style.display = "block";
+    }
+
+    // When a count is typed, update the level to match.
+    $("rows").addEventListener("input", (e) => {
+      if (!e.target.classList.contains("ct")) return;
+      const lv = levelFromCount(e.target.value === "" ? null : Number(e.target.value));
+      if (lv) e.target.closest(".row").querySelector(".lv").value = lv;
+    });
+
+    $("addRow").onclick = () => {
+      $("rows").insertAdjacentHTML("beforeend", rowHtml({ name: "", emoji: "📦", count: null, level: "some", category: "Other", unit: "" }));
+    };
+
+    $("confirm").onclick = async () => {
+      $("confirm").disabled = true;
+      try {
+        const now = new Date().toISOString();
+        const rows = new Map(); // id -> full row (Map so two rows with the same name merge)
+        for (const row of $("rows").querySelectorAll(".row")) {
+          if (!row.querySelector(".inc").checked) continue;
+          const name = row.querySelector(".nm").value.trim();
+          if (!name) continue;
+          const id = slug(name);
+          const old = existing.get(id);
+          const raw = row.querySelector(".ct").value;
+          const count = raw === "" ? null : Math.max(0, Math.round(Number(raw)));
+          let level = row.querySelector(".lv").value;
+          let qty = count;
+
+          if (mode === "restock") {
+            const base = rows.get(id)?.qty ?? old?.qty ?? null;
+            qty = count === null ? base : (base || 0) + count;
+            level = qty !== null ? levelFromCount(qty) : maxLevel(old?.level || "out", level === "out" ? "some" : level);
+          }
+
+          rows.set(id, {
+            id,
+            name: old?.name || name,
+            emoji: row.querySelector(".emo").value || old?.emoji || "📦",
+            category: row.querySelector(".cat").value,
+            unit: row.dataset.unit || old?.unit || "",
+            qty,
+            level,
+            updated_at: now,
+          });
+        }
+        const outIds = [...$("missing").querySelectorAll(".mo:checked")].map((b) => b.value);
+        if (!rows.size && !outIds.length) throw new Error("Nothing selected");
+
+        if (rows.size) {
+          const { error } = await sb.from("items").upsert([...rows.values()]);
+          if (error) throw new Error(error.message);
+        }
+        if (outIds.length) {
+          const { error } = await sb.from("items").update({ qty: 0, level: "out", updated_at: now }).in("id", outIds);
+          if (error) throw new Error(error.message);
+        }
+        const logged = [...rows.values()].map(({ id, qty, level }) => ({ id, qty, level }))
+          .concat(outIds.map((id) => ({ id, qty: 0, level: "out" })));
+        await sb.from("scans").insert({ mode, items: logged, notes: lastNotes }); // log only; ignore errors
+
+        status(`Board updated ✅ (${logged.length} item${logged.length > 1 ? "s" : ""})`, "ok");
+        $("reviewPanel").style.display = "none";
+        $("preview").style.display = "none";
+      } catch (err) {
+        status("Save failed: " + err.message, "err");
+      } finally {
+        $("confirm").disabled = false;
+      }
+    };
+
+    // Puts the demo shelf back to a known starting point (eggs and bananas out).
+    $("resetDemo").onclick = async () => {
+      if (!confirm("Reset the demo shelf?")) return;
+      const demo = [
+        ["Eggs", "🥚", "Dairy & Eggs", 0, "eggs", "out"],
+        ["Milk", "🥛", "Dairy & Eggs", 1, "jugs", "low"],
+        ["Banana", "🍌", "Produce", 0, "bananas", "out"],
+        ["Canned Beans", "🥫", "Canned", null, "cans", "some"],
+        ["Rice", "🍚", "Grains & Pasta", null, "bags", "plenty"],
+        ["Cereal", "🥣", "Grains & Pasta", 3, "boxes", "low"],
+        ["Peanut Butter", "🥜", "Protein", 8, "jars", "some"],
+      ];
+      const now = new Date().toISOString();
+      const rows = demo.map(([name, emoji, category, qty, unit, level]) =>
+        ({ id: slug(name), name, emoji, category, qty, unit, level, updated_at: now }));
+      const { error } = await sb.from("items").upsert(rows);
+      if (error) { status("Reset failed: " + error.message, "err"); return; }
+      status("Demo shelf reset ✅", "ok");
+    };
+  </script>
+</body>
+</html>

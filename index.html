@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pantry Live</title>
+  <link rel="stylesheet" href="js/style.css">
+</head>
+<body>
+  <header>
+    <h1>Pantry <span>Live</span></h1>
+    <p>What's on the Student Food Pantry shelves right now. No login, no questions.</p>
+  </header>
+  <div class="banner" id="banner">Milk and eggs usually arrive Fridays · Updated live from volunteer photos</div>
+  <main>
+    <div id="board"><p class="empty">Loading the shelves…</p></div>
+  </main>
+
+  <script type="module">
+    import { sb, CATEGORIES, LEVEL_LABEL, timeAgo, esc } from "./js/common.js";
+
+    const board = document.getElementById("board");
+    let items = [];
+    const lastSeen = new Map(); // id -> updated_at, to flash cards that just changed
+    let firstLoad = true;
+
+    async function load() {
+      const { data, error } = await sb.from("items").select("*");
+      if (error) {
+        board.innerHTML = `<p class="empty">Couldn't load the board: ${esc(error.message)}</p>`;
+        return;
+      }
+      items = data;
+      render();
+      firstLoad = false;
+    }
+
+    // Live updates: any change to the items table reloads the board.
+    sb.channel("board")
+      .on("postgres_changes", { event: "*", schema: "public", table: "items" }, () => load())
+      .subscribe();
+    load();
+
+    function render() {
+      if (!items.length) {
+        board.innerHTML = `<p class="empty">No items yet. A volunteer photo will fill this in.</p>`;
+        return;
+      }
+      const changed = new Set();
+      for (const it of items) {
+        if (!firstLoad && lastSeen.get(it.id) !== it.updated_at) changed.add(it.id);
+        lastSeen.set(it.id, it.updated_at);
+      }
+      const order = (c) => { const i = CATEGORIES.indexOf(c); return i < 0 ? 99 : i; };
+      const groups = {};
+      for (const it of items) (groups[it.category || "Other"] ||= []).push(it);
+
+      board.innerHTML = Object.keys(groups).sort((a, b) => order(a) - order(b)).map((cat) => {
+        const cards = groups[cat]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map((it) => {
+            const level = it.level || "some";
+            const count = it.qty !== null && it.qty !== undefined
+              ? `${it.qty} ${esc(it.unit || "")}` : "Amount not counted";
+            return `<div class="card ${level} ${changed.has(it.id) ? "flash" : ""}">
+              <div class="emoji">${esc(it.emoji || "📦")}</div>
+              <div class="name">${esc(it.name)}</div>
+              <div class="count">${count}</div>
+              <span class="badge ${level}">${LEVEL_LABEL[level] || level}</span>
+              <div class="ago">Updated ${timeAgo(it.updated_at)}</div>
+            </div>`;
+          }).join("");
+        return `<h2 class="cat">${esc(cat)}</h2><div class="grid">${cards}</div>`;
+      }).join("");
+    }
+
+    // Refresh the "X min ago" labels every 30 s without flashing anything.
+    setInterval(() => { if (items.length) { firstLoad = true; render(); firstLoad = false; } }, 30000);
+  </script>
+</body>
+</html>
