@@ -25,9 +25,88 @@ What no one else does:
 - **The real market is spreadsheets.** In a 2023 survey of about 355 campus pantries, about 60% used Word, Excel or
   Google tools; 9% used PantrySOFT.
 
-What we do not do, and should not pretend to: household intake and the eligibility records TEFAP requires (7 CFR
-251.10). Pantries keep those in Service Insights, PantrySOFT, Link2Feed or Oasis. Pantry Live sits beside them and
-hands them the numbers they ask partners for: pounds, items in and out, pickups.
+What we do not do, and should not pretend to: the eligibility records TEFAP requires (7 CFR 251.10), meaning income,
+documents and the signed declaration. Pantries keep those in Service Insights, PantrySOFT, Link2Feed or Oasis.
+Pantry Live records household size and counts people once, so it can hand a pantry every number its readers ask for,
+without becoming an intake tool.
+
+## The base layer
+
+Decided November 16 2026, after mapping twelve ways pantries operate and what campus pantries report. The full map,
+with every action on both sides of the counter, is the Pantry Live service map artifact; its sources are listed at the
+end of this file.
+
+### Who we build for
+
+Pantries are the customer: they reach the people. A food bank, a school, a donor or a state is a reader of the
+pantry's numbers, never the buyer we design for. Like Shopify, there is one engine, and each pantry sets its own
+profile on top. No pantry gets custom code.
+
+### Twelve ways pantries work
+
+| Model | On the base layer |
+|---|---|
+| Campus pantry | Fits today |
+| Faith based, choice or bags | Fits as choice or box |
+| Community fridge, self serve | Fits as a board with no reservations |
+| Client choice with points or pounds | Needs the limit rules below |
+| Pre packed box | Needs a box as an item, sized by household |
+| Drive through | Needs dated events and a fast tally |
+| Mobile pantry at a host site | Needs dated events at a site |
+| Online order with a pickup slot | Needs time slots |
+| Food bank ordering and its monthly report | Needs the record below |
+| Senior box and home delivery | Later: delivery routes |
+| School backpack program | Later: counts only, chosen by school staff |
+| Referral voucher (UK, clinics) | Later: referral codes |
+
+### The record: facts captured once, every report a view of them
+
+Campus pantries report to their food bank (most monthly), Student Affairs, donors, a public yearly report and, in
+Connecticut and California, the state. No two ask for the same fields, and food banks band ages differently (17 or 18,
+59 or 60, 64 or 65). So the log records facts, never a report's shape:
+
+1. **Every visit**: time, place or pickup point, and how food left (choice, box, order with a slot, event, delivery,
+   self serve). One visit model with a mode, so every handout lands in the same log.
+2. **Who, counted once**: a private person key, so a person counts once per month, term or year. Or counts only,
+   for pantries that keep visits anonymous (45% of campus pantries keep no student data).
+3. **Household size with birth years**, so any report groups ages its own way.
+4. **Role**: student, staff, faculty, family, community.
+5. **Optional answers**, only the ones the pantry chooses to ask: class year, first generation, housing, ZIP code.
+6. **Every item out**: count, weight, and where it came from.
+7. **Every donation in**: donor, kind of donor (food bank, drive, grocery rescue, dining, person), items, weight, cost
+   if bought, and enough for a donor receipt.
+8. **Volunteer shifts and hours.**
+9. **The pantry's own fiscal year and terms.**
+
+Never in the base layer: income, documents, eligibility declarations, or any shopper's name on a public page.
+
+### The pantry profile
+
+| Setting | Campus preset | Community preset |
+|---|---|---|
+| Who can shop | School email domains | Anyone, or registered households |
+| How shoppers sign up | Verified email link | Text code, or the desk adds them; or nothing at all |
+| When | Open hours | Distribution days, time slots or dated events |
+| Limits | Per item, per pickup | Per household, per week or month; points or pounds |
+| How food leaves | Choice | Choice or pre packed boxes |
+| Counting people | Private person key | Household with size, or counts only |
+| Language | English | English and Spanish |
+
+The first question a new pantry answers is what kind of pantry it is; the preset fills every setting and the owner
+can change any of them.
+
+### Habits
+
+When every pantry records the same facts the same way, patterns appear: when lines are longest, what runs out first,
+when donations arrive, which weeks are hardest. A pantry learns from its own history first; learning across pantries
+waits for real usage and each pantry's permission.
+
+### Still to confirm with Ugonna for CMU
+
+What the Greater Lansing Food Bank asks for each month and when it is due; whether faculty and staff can shop (the
+public page says enrolled students); whether food is weighed in or out; what the Volunteer Center or Student Affairs
+asks for each year; which count takes the most time; what PantrySOFT is used for day to day; whether food donors get a
+receipt.
 
 ## The audit, against our own rules
 
@@ -62,9 +141,14 @@ Each phase ends with its "done when" true on a local stack and on staging, walke
 
 Fixes audit items 1 to 9. Nothing here is visible to a student; all of it is what lets a second pantry exist.
 
-- **Pantries.** A `pantries` table (name, place, time zone, hours, email domains, categories, the board title) and a
-  `pantry_id` on every table, with row level security by pantry. Everything that is CMU today becomes that pantry's
-  settings. Done when two pantries run side by side and a test proves neither can read the other's rows.
+- **Pantries.** A `pantries` table holding the pantry profile above (name, place, time zone, hours, who can shop,
+  limits, how food leaves, how people are counted, categories, the board title) and a `pantry_id` on every table,
+  with row level security by pantry. Everything that is CMU today becomes that pantry's settings, set by the campus
+  preset. Done when two pantries run side by side, one campus and one community, and a test proves neither can read
+  the other's rows.
+- **The record.** Visits with a mode, the private person key or counts only, household size with birth years, role,
+  weight per item, donors on every donation in. Done when the CMU pantry's month can be counted three ways (its food
+  bank's age bands, Student Affairs, a donor) from the same rows, with no shopper name on any public read.
 - **Staff accounts.** Each volunteer signs in by email link (Supabase Auth), with a role (owner, staff, volunteer) as a
   claim. The name on a scan is the signed in person. The shared PIN goes. Done when every write names a real account
   and a volunteer token cannot reach owner routes.
@@ -81,9 +165,10 @@ Fixes audit items 1 to 9. Nothing here is visible to a student; all of it is wha
 
 ### Phase 2: beat PantrySOFT where pantries feel it (about a week)
 
-- **The partner report.** One page and a CSV for the month: pounds in, pounds out, items by category, pickups, unique
-  visitors. Weight per unit is set once per item and confirmed on Review. Done when the numbers match the log to the
-  item and a food bank's monthly form can be filled from it.
+- **Reports, one per reader.** The food bank month (households, people by the food bank's own age bands, pounds), the
+  school's term, and a donor's impact, each one page and a CSV built from the record. Weight per unit is set once per
+  item and confirmed on Review. Done when the numbers match the log to the item and a food bank's monthly form can be
+  filled from it.
 - **Barcode beside the photo.** Packaged goods scan by barcode; the photo stays for loose and mixed donations.
 - **The board in Spanish and English**, by the phone's language.
 - **Desk mode that survives bad Wi-Fi.** Hand over works offline and syncs, through one queue, with the same
@@ -97,7 +182,8 @@ Fixes audit items 1 to 9. Nothing here is visible to a student; all of it is wha
 
 ## No gos
 
-- No household eligibility or TEFAP intake. That belongs to the tools pantries already report through.
+- No income, documents or TEFAP eligibility intake. That belongs to the tools pantries already report through.
+- No shopper's name on anything public.
 - No price on anything until Praise sets one.
 - No feature without its screen drawn and approved first.
 
@@ -112,3 +198,15 @@ Fixes audit items 1 to 9. Nothing here is visible to a student; all of it is wha
 - Oasis Insight: https://foodpantry.oasisinsight.net
 - TEFAP records: https://www.law.cornell.edu/cfr/text/7/251.10
 - Partner reporting examples: https://www.foodbankcny.org/service-number-reporting/ ; https://idahofoodbank.org/t-agencyzone/
+- Age bands differ by food bank: https://feedwm.org/wp-content/uploads/2024/05/Statistics-Reporting-Guidelines.pdf ;
+  https://cfbnj.org/wp-content/uploads/2024/07/PDF-CFBNJ-Monthly-Service-Report-DPI-6.25.24-1.pdf
+- Mobile pantry manual: https://feedwm.org/wp-content/uploads/2024/05/Mobile-Food-Pantry-Manual.pdf
+- Drive through pantries: https://www.feedingamerica.org/our-work/hunger-relief-programs/drive-thru-pantry
+- Campus pantry survey 2021 (45% keep no student data, reporting cadence): https://swipehunger.org/wp-content/uploads/2022/04/College-Campus-Food-Pantries-Learnings-from-a-2021-Survey.pdf
+- CMU pantry: https://www.wcmu.org/show/central-focus/2025-12-03/central-focus-cmu-food-pantry-addresses-food-insecurity ;
+  https://www.cmich.edu/offices-departments/mary-ellen-brandell-volunteer-center/programs/student-food-pantry-and-food-insecurity-resources
+- Campus reports: https://foodpantry.org.uiowa.edu/sites/foodpantry.org.uiowa.edu/files/2025-10/BASIC-NEEDS-REPORT-FY-25-Final.pdf ;
+  https://www.unomaha.edu/maverick-food-pantry/_files/images/mfp-eoy-report-2024-25.pdf ;
+  https://bhccedu-lb01-production.terminalfour.net/media/03-documents/dishfoodpantry/DISH-annual-2025-v3s.pdf
+- Lagos Food Bank: https://lagosfoodbank.org/project/tefap
+- Trussell referral vouchers: https://www.trussell.org.uk/get-help/
